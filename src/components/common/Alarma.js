@@ -4,9 +4,11 @@ import colors from '../../utils/colors'
 import { Icon } from 'react-native-elements'
 import { useState } from 'react'
 import CamillaShow from './CamillaShow'
-/* import swal from '@sweetalert/with-react'
- */
-export default function Alarma() {
+import SweetAlert from 'react-native-sweet-alert';
+
+export default function Alarma(props) {
+    const {camilla, sala,paciente,expediente} = props;
+    
     //useState sirve para indicar el estado inicial del icono
     const [isLiked, setIsLiked] = useState(false);
     //Sirve para cambiar el color del icono
@@ -15,31 +17,56 @@ export default function Alarma() {
     const onPressIcon = () => {
         setIsLiked(!isLiked);
     };
-    /* const showAlert=()=>{
+
+/*     const [showAlert, setShowAlert] = useState(false);
+ */
+    const handlePress = () => {
+        setShowAlert(true);
+    }
+
+    const handleConfirm = () => {
+        setShowAlert(false);
+        // Aquí puedes agregar la lógica para manejar la confirmación del usuario
+    }
+
+    const handleCancel = () => {
+        setShowAlert(false);
+        // Aquí puedes agregar la lógica para manejar la cancelación del usuario
+    }
+    const showAlert=()=>{
         swal({
-            title: "Are you sure?",
-            text: "Once deleted, you will not be able to recover this imaginary file!",
+            title: "¿Estás seguro de apagar la alarma?",
             icon: "warning",
             buttons: true,
             dangerMode: true,
           })
           .then((willDelete) => {
             if (willDelete) {
-              swal("Poof! Your imaginary file has been deleted!", {
+              swal("Alarma apagada exitosamente", {
                 icon: "success",
+                //llamar a la funcion onPressIcon
+                onPressIcon
               });
             } else {
-              swal("Your imaginary file is safe!");
+              swal("Alarma no apagada");
             }
           });
-        } */
+        }
     return (
         <View style={styles.container}>
-            <CamillaShow style={styles.CamillaContainer} />
+            <CamillaShow style={styles.CamillaContainer} 
+            camilla={camilla} paciente={paciente} sala={sala} expediente={expediente}/>
             <View backgroundColor={iconColor} style={styles.iconStyle}>
                 <Icon type='material-community' name="power" iconStyle={styles.icon}
                     onPress={onPressIcon} size={250} color="white" />
             </View>
+            {/* <SweetAlert
+                show={showAlert}
+                title="Deseas"
+                subTitle="Subtítulo de la alerta"
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            /> */}
             <Text style={styles.title}>Presiona el botón rojo {"\n"}para apagar la alarma</Text>
         </View>
     )

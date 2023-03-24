@@ -5,6 +5,31 @@ import ExitBtn from '../components/account/ExitBtn';
 
 export default function IndexScreen(props) {
   const { navigation } = props;
+  
+  console.log("entra xd a IndexScreen"); 
+  const camillas = [
+    {
+      id: 1,
+      camilla: "Camilla 1",
+      sala: "Sala 1",
+      paciente:"Diego Albabera Fierro",
+      expediente:"c8dhf-jrj7-098"
+    },
+    {
+      id: 2,
+      camilla: "Camilla 2",
+      sala: "Sala 1",
+      paciente:"Misael Bahena Diaz",
+      expediente:"c8dhf-jrj7-110"
+    },
+    {
+      id:3,
+      camilla: "Camilla 4",
+      sala: "Sala 2",
+      paciente:"Yahir Diaz Gonzalez",
+      expediente:"c8dhf-jrj7-098"
+    }
+  ]
 
   return (
     <View style={styles.Container}>
@@ -17,16 +42,25 @@ export default function IndexScreen(props) {
           onPress={() => {
             navigation.navigate('LoginS')
           }} />
-      </View>
-      <Camillas onPress={() => {
-        navigation.navigate("AlarmaS");
-      }} />
-      <Camillas onPress={() => {
-        navigation.navigate("AlarmaS");
-      }} />
-      <Camillas onPress={() => {
-        navigation.navigate("AlarmaS");
-      }} />
+      </View>     
+      {
+        camillas.map((camilla) => {
+          return (
+            <Camillas
+              key={camilla.id}
+              onPress={() => {
+                navigation.navigate('AlarmaS', { camilla: camilla.camilla, sala: camilla.sala, paciente: camilla.paciente, expediente: camilla.expediente })
+                console.log({camilla: camilla.camilla, sala: camilla.sala, paciente: camilla.paciente, expediente: camilla.expediente });
+              }}
+              camilla={camilla.camilla}
+              sala={camilla.sala}
+              paciente={camilla.paciente}
+              expediente={camilla.expediente}
+            />
+          )
+        })
+      }
+      
     </View>
   )
 }

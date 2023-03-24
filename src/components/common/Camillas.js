@@ -5,12 +5,13 @@ import colors from '../../utils/colors';
 
 
 export default function Camillas(props) {
-    const { onPress } = props;
+    const { onPress, camilla, sala,paciente,expediente } = props;
+    
 
     return (
         <View >
-            <Button title={<Text style={styles.textStyle}>Camilla 17 {'\n'}
-                Sala 3 {'\n'} Diego Albabera Fierro {'\n'} Nº c8dhf-jrj7-098</Text>} 
+            <Button title={<Text style={styles.textStyle}>{camilla} {'\n'}
+                {sala} {'\n'} {paciente} {'\n'} {expediente}</Text>} 
                 onPress={onPress} titleStyle={styles.textStyle}
                 buttonStyle={styles.btn}>
             </Button>

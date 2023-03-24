@@ -2,13 +2,15 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import colors from '../../utils/colors'
 
-export default function CamillaShow() {
+export default function CamillaShow(props) {
+    const { camilla, sala,paciente,expediente } = props;
+
     return (
         <View>
             <View >
                 <View style={styles.btn}>
-                    <Text style={styles.textStyle}>Camilla 17 {'\n'}
-                        Sala 3 {'\n'} Diego Albabera Fierro {'\n'} Nº c8dhf-jrj7-098
+                    <Text style={styles.textStyle}>{camilla} {'\n'}
+                        {sala} {'\n'} {paciente} {'\n'} {expediente}
                     </Text>
                 </View>
             </View>
