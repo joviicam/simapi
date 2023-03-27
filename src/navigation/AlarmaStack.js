@@ -5,10 +5,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AlarmaScreen from '../screens/AlarmaScreen'
 const Stack = createNativeStackNavigator();// Crear un stack navigator
 
-export default function AlarmaStack() {
+export default function AlarmaStack(props) {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="AlarmaS" component={AlarmaScreen} options={{title:"Alarma"}} />
+            <Stack.Screen name="AlarmaS" component={<AlarmaScreen />} options={{title:"Alarma"}} />
         </Stack.Navigator>
     )
 }

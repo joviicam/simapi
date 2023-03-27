@@ -46,16 +46,13 @@ export default function IndexScreen(props) {
       {
         camillas.map((camilla) => {
           return (
-            <Camillas
+            <Camillas camilla={camilla.camilla} sala= {camilla.sala} paciente= {camilla.paciente} expediente= {camilla.expediente}
               key={camilla.id}
               onPress={() => {
-                navigation.navigate('AlarmaS', { camilla: camilla.camilla, sala: camilla.sala, paciente: camilla.paciente, expediente: camilla.expediente })
+                navigation.navigate('AlarmaS', {camilla: camilla.camilla, sala: camilla.sala, paciente: camilla.paciente, expediente: camilla.expediente })
                 console.log({camilla: camilla.camilla, sala: camilla.sala, paciente: camilla.paciente, expediente: camilla.expediente });
               }}
-              camilla={camilla.camilla}
-              sala={camilla.sala}
-              paciente={camilla.paciente}
-              expediente={camilla.expediente}
+              
             />
           )
         })

@@ -6,7 +6,6 @@ import colors from '../../utils/colors';
 
 export default function Camillas(props) {
     const { onPress, camilla, sala,paciente,expediente } = props;
-    
 
     return (
         <View >

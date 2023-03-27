@@ -7,15 +7,15 @@ import CamillaShow from './CamillaShow'
 import SweetAlert from 'react-native-sweet-alert';
 
 export default function Alarma(props) {
-    const {camilla, sala,paciente,expediente} = props;
+    const {camilla, sala,paciente,expediente, alarma} = props;
     
     //useState sirve para indicar el estado inicial del icono
-    const [isLiked, setIsLiked] = useState(false);
+    const [isLiked, setIsLiked] = useState(alarma);
     //Sirve para cambiar el color del icono
-    const iconColor = isLiked ? 'gray' : 'red';
+    const iconColor = isLiked ? 'red' : 'gray';
     //Función para cambiar el estado del icono al presionarlo
     const onPressIcon = () => {
-        setIsLiked(!isLiked);
+        setIsLiked(false);
     };
 
 /*     const [showAlert, setShowAlert] = useState(false);
