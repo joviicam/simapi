@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, fetch } from 'react-native'
 import React from 'react'
 import { Input, Button, Icon } from 'react-native-elements'
-import { useFormik } from 'formik'//Para manejar el formulario con formik
+import { useFormik, Form, Formik } from 'formik'//Para manejar el formulario con formik
 import * as Yup from 'yup'//Para validar el formulario con yup 
 import { useEffect, useState } from 'react'
 import Toast from 'react-native-toast-message'//Para mostrar los mensajes de error en el formulario
@@ -9,91 +9,129 @@ import colors from '../../utils/colors'
 import { useNavigation } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import BtnPrimary from '../common/BtnPrimary'
+import { isUserAuthenticated } from '../account/TokenValidate';
 
-/* import BtnPrimary from '../common/BtnPrimary'
- */
 export default function LoginForm({ navigation }) {//Recibe las propiedades de la pantalla (navigation: {navigate
     const navigator = useNavigation();
 
-    const tituloBtn = "Iniciar Sesion";
-    const [password, setPassword] = useState(false);//Para mostrar la contraseña
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
+
+
     const showPass = () => {//Función para mostrar la contraseña
         setPassword(!password)
     }
 
     const formik = useFormik({
-        initialValues: {//Inicializa los valores del formulario, maneja un objeto
-            email: "",
-            password: ""
-        },
-
-        validationSchema: Yup.object({//Valida el formulario con yup 
-            email: Yup.string().email("Formato de email no válido").required("Correo electrónico obligatorio"),
-            password: Yup.string().required("Contraseña obligatoria")
-
+        validationSchema: Yup.object({
+            email: Yup.string().email('Correo electrónico inválido').required('Correo electrónico obligatorio'),
+            password: Yup.string().required('Contraseña obligatoria')
         }),
-
-        validateOnChange: false,//Para que no se valide el formulario al escribir
-
-        onSubmit: async (formValue) => {//async para que espere a que se ejecute el try catch
-            try {
-
-                console.log(formValue)
-                //Navega a la pantalla HorarioS
-                // Utiliza el objeto de navegación sólo si está listo
-                navigation.navigate('HorarioS')
-
-            } catch {
-                Toast.show({//Muestra el mensaje de error
-                    //Propiedades del toast
+        initialValues: {
+            email: '',
+            password: ''
+        },
+        onSubmit: () => {
+            if (email === '' || password === '') {
+                Toast.show({
                     type: "error",
-                    position: "top",
-                    text1: "Error al iniciar sesión",
+                    position: "bottom",
+                    text1: "Campos obligatorios",
                 });
+            } else {
+                //fetch para hacer la petición al servidor
+                fetch("http://localhost:8080/api/auth/login", {
+                    method: "POST",
+                    headers: {//Para que el servidor sepa que se está enviando un json
+                        "Content-Type": "application/json",
+                    },
+                    //Convierte el objeto a un json
+                    body: JSON.stringify({
+                        correo: email,
+                        password: password,
+                    }),
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            localStorage.setItem("token", null);//setea el token en null
+                            localStorage.removeItem("token");//Elimina el token del localStorage
+                            Toast.show({
+                                type: "error",
+                                position: "bottom",
+                                text1: "Datos incorrectos",
+                            });
+                            throw new Error(response.statusText);
+                        } else {
+                            //response.json() devuelve una promesa
+                            return response.json();
+                        }
+                    })
+                    .then((datos) => {//Si el login es correcto guarda el token en el localStorage
+                        localStorage.setItem("token", datos.data.token);//Guarda el token en el localStorage
+                        navigation.navigate('HorarioS')//Redirecciona a la pantalla de inicio
+                    })
+                    .catch((error) => console.log(error));
             }
-            console.log(formValue)
-        }
+        },
+        onReset: () => {
+            setEmail('')
+            setPassword('')
+            
+        },
+        
     });
-
+    useEffect(() => {
+        //Si el usuario ya está autenticado, lo redirige a la pantalla de horario
+        if (isUserAuthenticated()) {
+            navigation.navigate('HorarioS')
+        }
+    }, []);
 
     return (
         <KeyboardAwareScrollView>
+            <Formik>
+                initialValues={formik.initialValues}
+                onSubmit={formik.onSubmit}
+                validationSchema={formik.validationSchema}
+                onReset={formik.onReset}
+            </Formik>
             <View style={styles.Container1} >
-                <View style={styles.Container}>
-                    <View style={styles.icon}>
-                        <Icon type='material-community' name="account" color="#FFF" size={150} />
-                    </View>
-                    <View style={styles.viewForm}>
-                        <Text style={styles.title}> Bienvenido a SIMAPI</Text>
-                        <View style={styles.inputContainer}>
-                            <Input placeholder='Correo electrónico' style={styles.inputStyle}
-                                rightIcon={<Icon type="material-community" name="at" iconStyle={styles.Icon} />}
-                                //onChangeText={text => setEmail(text)}//Para que se actualice el valor del email al escribir en el input
-                                onChangeText={text => formik.setFieldValue("email", text)}
-                                //errorMessage={email ? null : "El email es obligatorio"}//Si el email es null muestra el mensaje
-                                errorMessage={formik.errors.email}></Input>
+                <Form>
+                    <View style={styles.Container}>
+                        <View style={styles.icon}>
+                            <Icon type='material-community' name="account" color="#FFF" size={150} />
+                        </View>
+                        <View style={styles.viewForm}>
+                            <Text style={styles.title}> Bienvenido a SIMAPI</Text>
+                            <View style={styles.inputContainer}>
+                                <Input placeholder='Correo electrónico' style={styles.inputStyle}
+                                    rightIcon={<Icon type="material-community" name="at" iconStyle={styles.Icon} />}
+                                    //onChangeText={text => setEmail(text)}//Para que se actualice el valor del email al escribir en el input
+                                    id={"email"}value={formik.values.email} onChangeText={formik.handleChange('email')}
+                                    onBlur={formik.handleBlur('email')}
+                                    //errorMessage={email ? null : "El email es obligatorio"}//Si el email es null muestra el mensaje
+                                    errorMessage={formik.errors.email}></Input>
+                            </View>
+
+                            <View style={styles.inputContainer}>
+                                <Input secureTextEntry={password ? false : true} placeholder='Contraseña' style={styles.inputStyle}
+                                    rightIcon={<Icon type="material-community" name={password ? "eye-off-outline" : "eye-outline"} iconStyle={styles.Icon}
+                                        //onPress={()=>setPassword(!password)}//Para que se muestre la contraseña al presionar el icono
+                                        onPress={showPass} />}
+                                        value={formik.values.password} id={"password"} onChangeText={formik.handleChange('password')}
+                                        onBlur={formik.handleBlur('password')}
+                                    errorMessage={formik.errors.password}></Input>
+                            </View>
                         </View>
 
-                        <View style={styles.inputContainer}>
-                            <Input secureTextEntry={password ? false : true} placeholder='Contraseña' style={styles.inputStyle}
-                                rightIcon={<Icon type="material-community" name={password ? "eye-off-outline" : "eye-outline"} iconStyle={styles.Icon}
-                                    //onPress={()=>setPassword(!password)}//Para que se muestre la contraseña al presionar el icono
-                                    onPress={showPass} />}
-                                onChangeText={text2 => formik.setFieldValue("password", text2)}
-                                errorMessage={formik.errors.password}></Input>
-                        </View>
-                    </View>
-
-                    {/*  <Button title="Iniciar sesión"  onPress={formik.handleSubmit} style={styles.inputStyle}
+                        {/*  <Button title="Iniciar sesión"  onPress={formik.handleSubmit} style={styles.inputStyle}
                     containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
                 </Button> */}
-
-                </View>
-                <BtnPrimary style={styles.BtnPrimaryS} text="Iniciar sesión"
-                    onPress={() => {
-                        navigator.navigate('HorarioS')
-                        formik.handleSubmit()
-                    }}></BtnPrimary>
+                    </View>
+                    <BtnPrimary style={styles.BtnPrimaryS} text="Iniciar sesión" type={'submit'}
+                    onPress={formik.handleSubmit}></BtnPrimary>
+                </Form>
             </View>
         </KeyboardAwareScrollView>
     )
@@ -174,4 +212,3 @@ const styles = StyleSheet.create({
     }
 
 })
-
