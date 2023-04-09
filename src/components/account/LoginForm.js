@@ -80,7 +80,6 @@ export default function LoginForm({ navigation }) {
               text1: "No tienes permisos para acceder a esta aplicación",
             });
           }
-
         } else {
           Toast.show({
             type: "error",
