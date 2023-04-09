@@ -3,27 +3,115 @@ import React from 'react'
 import colors from '../utils/colors'
 import { Button } from 'react-native-elements'
 import ExitBtn from '../components/account/ExitBtn';
+import { getData, saveData } from '../utils/Storage';
 
 export default function HorarioScreen(props) {
   const { navigation } = props;
-  const horarios = [
-    {
-      id: 1,
-      title: "Matutino",
-      horario: "7:00 - 15:00"
-    },
-    {
-      id: 2,
-      title: "Vespertino",
-      horario: "15:00 - 23:00"
-    },
-    {
-      id: 3,
-      title: "Guardia",
-      horario: "23:00 - 7:00"
+
+
+
+
+  function isUserAuthenticated() {
+    const token = getData("token");
+    return token != null;
+  }
+
+
+  async function getToken() {
+    const token = await getData("token");
+    return token;
+  }
+
+  // obtener hora actual
+  const date = new Date();
+  const hour = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+  const time = hour + ":" + minutes + ":" + seconds;
+
+  function hoarioCards() {
+    if (time >= "7:00" && time <= "7:10") {
+      setTimeout(() => {
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: "Tiempo de sesión expirado",
+        });
+        navigation.navigate("LoginS");
+        saveData("token", null);
+      }, 60000)
+      return (
+        <View key={1}>
+          <Button title={<Text style={styles.textStyle}>{"7:00 - 15:00"} {'\n'} {"7:00 - 15:00"}</Text>}
+            onPress={() => {
+              navigation.navigate("IndexS");
+            }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
+          </Button>
+        </View>
+      )
+    } else if (time >= "15:00" && time <= "15:10") {
+      setTimeout(() => {
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: "Tiempo de sesión expirado",
+        });
+        navigation.navigate("LoginS");
+        saveData("token", null);
+      }, 60000)
+      return (
+        <View key={2}>
+          <Button title={<Text style={styles.textStyle}>{"15:00 - 23:00"} {'\n'} {"15:00 - 23:00"}</Text>}
+            onPress={() => {
+              navigation.navigate("IndexS");
+            }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
+          </Button>
+        </View>
+      )
+    } else if (time >= "23:00" && time <= "23:10") {
+      setTimeout(() => {
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: "Tiempo de sesión expirado",
+        });
+        navigation.navigate("LoginS");
+        saveData("token", null);
+      }, 60000)
+      return (
+        <View key={3}>
+          <Button title={<Text style={styles.textStyle}>{"23:00 - 7:00"} {'\n'} {"23:00 - 7:00"}</Text>}
+            onPress={() => {
+              navigation.navigate("IndexS");
+            }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
+          </Button>
+        </View>
+      )
+    } else {
+      setTimeout(() => {
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: "No hay horario disponible",
+        });
+        navigation.navigate("LoginS");
+        saveData("token", null);
+      }, 60000)
+      return (
+        <View key={4}>
+          <Button title={<Text style={styles.textStyle}>{"No hay horario disponible"} {'\n'} {"No hay horario disponible"}</Text>}
+            onPress={() => {
+              navigation.navigate("LoginS");
+              saveData("token", null);
+            }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
+          </Button>
+        </View>
+      )
     }
-  ]
-  return (
+  }
+  console.log(time)
+
+  return getToken() != null ? (
     <View>
       <View style={styles.ExitBtnContainer}>
         <ExitBtn onPress={() => {
@@ -31,23 +119,19 @@ export default function HorarioScreen(props) {
         }} />
       </View>
       <View style={styles.viewForm}>
-        {
-          horarios.map((horario) => {
-            return (
-              <View key={horario.id}>
-                <Button title={<Text style={styles.textStyle}>{horario.title} {'\n'} {horario.horario}</Text>} 
-                  onPress={() => {
-                    navigation.navigate("IndexS");
-                    console.log({ horario: horario.title, horario: horario.horario })
-                  }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
-                </Button>
-              </View>
-            )
-          })
-        }
+        {hoarioCards()}
+      </View>
+    </View>
+  ) : (
+    <View>
+      <View style={styles.ExitBtnContainer}>
+        <ExitBtn onPress={() => {
+          navigation.navigate("LoginS");
+        }} />
       </View>
     </View>
   )
+
 }
 
 const styles = StyleSheet.create({

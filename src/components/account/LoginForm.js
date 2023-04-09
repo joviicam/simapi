@@ -10,11 +10,12 @@ import { useNavigation } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import BtnPrimary from "../common/BtnPrimary";
 import { isUserAuthenticated } from "../account/TokenValidate";
+import {saveData,getData} from "../../utils/Storage";
 
 export default function LoginForm({ navigation }) {
   //Recibe las propiedades de la pantalla (navigation: {navigate
   const navigator = useNavigation();
-
+  console.log(getData("token"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -86,7 +87,7 @@ export default function LoginForm({ navigation }) {
                       //formik.handleBlur("password")
                     }}
                     //errorMessage={email ? null : "El email es obligatorio"}//Si el email es null muestra el mensaje
-                    errorMessage={'email obligatorio'}
+                    errorMessage={'e-mail obligatorio'}
                   />
                 </View>
 
@@ -113,7 +114,7 @@ export default function LoginForm({ navigation }) {
                     onBlur={() => {
                       //formik.handleBlur("password")
                     }}
-                    errorMessage={'contraseña obligatoria'}
+                    errorMessage={'Contraseña obligatoria'}
                   ></Input>
                 </View>
               </View>
@@ -135,7 +136,7 @@ export default function LoginForm({ navigation }) {
                   });
                 } else {
                   //fetch para hacer la petición al servidor
-                  fetch("http://192.168.100.56:8080/api/auth/login", {
+                  fetch("http://192.168.1.76:8080/api/auth/login", {
                     method: "POST",
                     headers: {
                       //Para que el servidor sepa que se está enviando un json
@@ -166,7 +167,22 @@ export default function LoginForm({ navigation }) {
                       //Si el login es correcto guarda el token en el localStorage
                       //localStorage.setItem("token", datos.data.token); //Guarda el token en el localStorage
                       console.log(datos)
-                      navigator.navigate("HorarioS"); //Redirecciona a la pantalla de inicio
+                      console.log(datos.data.rol)
+                      if (datos.data.rol === "E") {
+                        //Almacena el token en local storage
+                        saveData("token", datos.data.token);
+                        saveData("colorPrimario", datos.data.colores.colorPrimario);
+                        saveData("colorSecundario", datos.data.colores.colorSecundario);
+                        saveData("colorTerciario", datos.data.colores.colorTerciario);
+                        saveData("idUsuario", datos.data.idUsuario);
+                        navigator.navigate("HorarioS");
+                      }else {
+                        Toast.show({
+                          type: "error",
+                          position: "bottom",
+                          text1: "Rol incorrecto",
+                        });
+                      }
                     })
                     .catch((error) => console.log({ERRORENELASYNC: error}));
                 }
