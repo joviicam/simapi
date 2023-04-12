@@ -12,9 +12,12 @@ import BtnPrimary from "../common/BtnPrimary";
 import { isUserAuthenticated } from "../account/TokenValidate";
 import { saveData, getData } from "../../utils/Storage";
 import { path } from "../../data";
+import { useRoute } from "@react-navigation/native";
 
 
 export default function LoginForm({ navigation }) {
+
+  const route = useRoute();
 
   const navigator = useNavigation();
   const [password, setPassword] = useState(false);
@@ -45,7 +48,7 @@ export default function LoginForm({ navigation }) {
     onSubmit: async (formData) => {
       console.log(formData);
       try {
-        const response = await fetch(`${path}/api/auth/login`, {
+        const response = await fetch(`${path}api/auth/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -61,18 +64,27 @@ export default function LoginForm({ navigation }) {
             text1: "Inicio de sesión exitoso",
           });
 
-          if (result.rol == "E") {
-            saveData("token", result.token);
-            saveData("nombre", result.nombre);
-            saveData("apellidos", result.apellidos);
-            saveData("correo", result.correo);
-            saveData("idUsuario", result.idUsuario);
-            saveData("idInstitucion", result.idInstitucion);
-            saveData("rol", result.rol);
-            saveData("colorPrimario", result.colorPrimario);
-            saveData("colorSecundario", result.colorSecundario);
-            saveData("colorTerciario", result.colorTerciario);
-            navigation.navigate("HorarioS");
+          if (result.data.rol == "E") {
+            saveData("token", result.data.token);
+            saveData("nombre", result.data.nombre);
+            saveData("apellidos", result.data.apellidos);
+            saveData("correo", result.data.correo);
+            saveData("idUsuario", result.data.idUsuario);
+            saveData("idInstitucion", result.data.colores.idInstitucion);
+            saveData("rol", result.data.rol);
+            saveData("colorPrimario", result.data.colores.colorPrimario);
+            saveData("colorSecundario", result.data.colores.colorSecundario);
+            saveData("colorTerciario", result.data.colores.colorTerciario);
+
+            Toast.show({
+              type: "success",
+              position: "top",
+              text1: "Inicio de sesión exitoso",
+            });
+
+            setTimeout(() => {
+              navigator.navigate("HorarioS");
+            }, 1000);
           } else {
             Toast.show({
               type: "error",

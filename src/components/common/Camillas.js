@@ -5,12 +5,13 @@ import colors from '../../utils/colors';
 
 
 export default function Camillas(props) {
-    const { onPress, camilla, sala,paciente,expediente } = props;
-
+    const { onPress, sala, paciente, expediente, alarma, isla } = props;
+    console.log("Camillas")
+    console.log({ sala: sala, paciente: paciente, expediente: expediente, alarma: alarma, isla: isla })
     return (
         <View >
-            <Button title={<Text style={styles.textStyle}>{camilla} {'\n'}
-                {sala} {'\n'} {paciente} {'\n'} {expediente}</Text>} 
+            <Button title={<Text style={styles.textStyle}>
+                {"Nombre: \n"}{paciente} {'\n\n'}{"N° Expediente: \n"}{expediente}</Text>}
                 onPress={onPress} titleStyle={styles.textStyle}
                 buttonStyle={styles.btn}>
             </Button>
@@ -19,10 +20,10 @@ export default function Camillas(props) {
 }
 
 const styles = StyleSheet.create({
-    
+
     btn: {
         width: 300,
-        height: 150,
+        height: 200,
         backgroundColor: colors.C_PRIMARIO,
         borderRadius: 10,
         marginBottom: 20,

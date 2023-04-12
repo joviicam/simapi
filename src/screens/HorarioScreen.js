@@ -3,19 +3,15 @@ import React from 'react'
 import colors from '../utils/colors'
 import { Button } from 'react-native-elements'
 import ExitBtn from '../components/account/ExitBtn';
-import { getData, saveData } from '../utils/Storage';
+import { getData, removeData, saveData } from '../utils/Storage';
+import Toast from "react-native-toast-message";
 
 export default function HorarioScreen(props) {
   const { navigation } = props;
-
-
-
-
   function isUserAuthenticated() {
     const token = getData("token");
     return token != null;
   }
-
 
   async function getToken() {
     const token = await getData("token");
@@ -76,7 +72,16 @@ export default function HorarioScreen(props) {
           text1: "Tiempo de sesión expirado",
         });
         navigation.navigate("LoginS");
-        saveData("token", null);
+        removeData("token");
+        removeData("nombre");
+        removeData("apellidos");
+        removeData("correo");
+        removeData("idUsuario");
+        removeData("idInstitucion");
+        removeData("rol");
+        removeData("colorPrimario");
+        removeData("colorSecundario");
+        removeData("colorTerciario");
       }, 60000)
       return (
         <View key={3}>
@@ -88,21 +93,21 @@ export default function HorarioScreen(props) {
         </View>
       )
     } else {
-      setTimeout(() => {
-        Toast.show({
-          type: "error",
-          position: "bottom",
-          text1: "No hay horario disponible",
-        });
-        navigation.navigate("LoginS");
-        saveData("token", null);
-      }, 60000)
-      return (
-        <View key={4}>
-          <Button title={<Text style={styles.textStyle}>{"No hay horario disponible"} {'\n'} {"No hay horario disponible"}</Text>}
-            onPress={() => {
+      /*       setTimeout(() => {
+              Toast.show({
+                type: "error",
+                position: "bottom",
+                text1: "No hay horario disponible",
+              });
               navigation.navigate("LoginS");
               saveData("token", null);
+            }, 60000) */
+      return (
+        <View key={4}>
+          <Button title={<Text style={styles.textStyle}>{"No hay horario disponible"}</Text>}
+            onPress={() => {
+              navigation.navigate("IndexS");
+              //saveData("token", null);
             }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
           </Button>
         </View>
@@ -161,7 +166,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.C_PRIMARIO,
     borderRadius: 10,
     marginBottom: 50,
-    height: 100,
+    height: 150,
     width: 220
   },
   ExitBtnContainer: {

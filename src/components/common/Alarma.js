@@ -5,37 +5,75 @@ import { Button, Icon } from 'react-native-elements'
 import { useState } from 'react'
 import CamillaShow from './CamillaShow'
 import Toast from 'react-native-toast-message';
+import { path } from '../../data'
+import { getData } from '../../utils/Storage'
 
 export default function Alarma(props) {
+    console.log("Alarma")
     const { camilla, sala, paciente, expediente, alarma } = props;
+    console.log({ camilla: camilla, sala: sala, paciente: paciente, expediente: expediente, alarma: alarma })
+
+    const [token, setToken] = useState(null);
+
+    const getToken = async () => {
+        const token = await getData('token');
+        setToken(token);
+    }
+
+
+    getToken();
+
+    console.log("Token: " + token);
+
 
     //useState sirve para indicar el estado inicial del icono
     const [isLiked, setIsLiked] = useState(alarma);
     //Sirve para cambiar el color del icono
     const iconColor = isLiked ? 'red' : 'gray';
     //Función para cambiar el estado del icono al presionarlo
-    const onPressIcon = () => {
-        setIsLiked(false);
-        console.log("Alarma apagada");
-    };
-    //console.log(menuOptions);
+    const onPressIcon = async () => {
+        setIsLiked(!isLiked);
+        console.log("La alarma se encuentra encendida");
+        Toast.show({
+            type: "success",
+            position: "bottom",
+            text1: "La alarma se apagó correctamente",
+        });
+        const url = path + 'api/camillas/alarma/' + camilla;
+        console.log("URL: " + url)
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({
+                estadoAlarma: false
+            })
+        });
+        const json = await response.json();
+        console.log(json);
+        // cambiar el valor de la alarma en el route
+        props.navigation.navigate('AlarmaS', { camilla: camilla, sala: sala, paciente: paciente, expediente: expediente, isla: isla, alarma: false })
+    }
+
     const [modalVisible, setModalVisible] = useState(false);
 
     const handlePress = () => {
         if (isLiked) {
             setModalVisible(true);
         }
-        if(!isLiked){
+        if (!isLiked) {
             console.log("La alarma se encuentra apagada");
             Toast.show({
                 type: "error",
                 position: "bottom",
                 text1: "La alarma se encuentra apagada",
-              });
+            });
         }
     }
     return (
-        <View style={styles.container}>
+        <View style={styles.container} >
             <CamillaShow style={styles.CamillaContainer}
                 camilla={camilla} paciente={paciente} sala={sala} expediente={expediente} />
             <TouchableOpacity onPress={handlePress}>
@@ -69,7 +107,7 @@ export default function Alarma(props) {
                     </View>
                 </View>
             </Modal>
-        </View>
+        </View >
     )
 }
 

@@ -1,16 +1,22 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import colors from '../../utils/colors'
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-export default function CamillaShow(props) {
-    const { camilla, sala,paciente,expediente } = props;
 
+export default function CamillaShow() {
+    const route = useRoute();
+    const token = route.params.token;
+    console.log("token: " + token)
+    const { camilla, sala, isla, paciente, expediente, alarma } = route.params;
+    console.log("CamillaShow")
+    console.log({ camilla: camilla, sala: sala, paciente: paciente, expediente: expediente, isla: isla, alarma: alarma })
     return (
         <View>
             <View >
                 <View style={styles.btn}>
-                    <Text style={styles.textStyle}>{camilla} {'\n'}
-                        {sala} {'\n'} {paciente} {'\n'} {expediente}
+                    <Text style={styles.textStyle}>
+                        {"Sala: "}{sala}{'\nNombre: \n'}{paciente}{'\nN° Expediente: \n'}{expediente}
                     </Text>
                 </View>
             </View>
@@ -21,7 +27,7 @@ export default function CamillaShow(props) {
 const styles = StyleSheet.create({
     btn: {
         width: 300,
-        height: 150,
+        height: 170,
         backgroundColor: colors.C_PRIMARIO,
         borderRadius: 10,
         marginBottom: 20,
