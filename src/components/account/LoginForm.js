@@ -1,214 +1,248 @@
-import { StyleSheet, Text, View, fetch } from 'react-native'
-import React from 'react'
-import { Input, Button, Icon } from 'react-native-elements'
-import { useFormik, Form, Formik } from 'formik'//Para manejar el formulario con formik
-import * as Yup from 'yup'//Para validar el formulario con yup 
-import { useEffect, useState } from 'react'
-import Toast from 'react-native-toast-message'//Para mostrar los mensajes de error en el formulario
-import colors from '../../utils/colors'
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { Input, Button, Icon } from "react-native-elements";
+import { useFormik } from "formik"
+import * as Yup from "yup";
+import { useEffect, useState } from "react";
+import Toast from "react-native-toast-message";
+import colors from "../../utils/colors";
 import { useNavigation } from "@react-navigation/native";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import BtnPrimary from '../common/BtnPrimary'
-import { isUserAuthenticated } from '../account/TokenValidate';
-
-export default function LoginForm({ navigation }) {//Recibe las propiedades de la pantalla (navigation: {navigate
-    const navigator = useNavigation();
-
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import BtnPrimary from "../common/BtnPrimary";
+import { isUserAuthenticated } from "../account/TokenValidate";
+import { saveData, getData } from "../../utils/Storage";
+import { path } from "../../data";
+import { useRoute } from "@react-navigation/native";
 
 
+export default function LoginForm({ navigation }) {
 
-    const showPass = () => {//Función para mostrar la contraseña
-        setPassword(!password)
-    }
+  const route = useRoute();
 
-    const formik = useFormik({
-        validationSchema: Yup.object({
-            email: Yup.string().email('Correo electrónico inválido').required('Correo electrónico obligatorio'),
-            password: Yup.string().required('Contraseña obligatoria')
-        }),
-        initialValues: {
-            email: '',
-            password: ''
-        },
-        onSubmit: () => {
-            if (email === '' || password === '') {
-                Toast.show({
-                    type: "error",
-                    position: "bottom",
-                    text1: "Campos obligatorios",
-                });
-            } else {
-                //fetch para hacer la petición al servidor
-                fetch("http://localhost:8080/api/auth/login", {
-                    method: "POST",
-                    headers: {//Para que el servidor sepa que se está enviando un json
-                        "Content-Type": "application/json",
-                    },
-                    //Convierte el objeto a un json
-                    body: JSON.stringify({
-                        correo: email,
-                        password: password,
-                    }),
-                })
-                    .then((response) => {
-                        if (!response.ok) {
-                            localStorage.setItem("token", null);//setea el token en null
-                            localStorage.removeItem("token");//Elimina el token del localStorage
-                            Toast.show({
-                                type: "error",
-                                position: "bottom",
-                                text1: "Datos incorrectos",
-                            });
-                            throw new Error(response.statusText);
-                        } else {
-                            //response.json() devuelve una promesa
-                            return response.json();
-                        }
-                    })
-                    .then((datos) => {//Si el login es correcto guarda el token en el localStorage
-                        localStorage.setItem("token", datos.data.token);//Guarda el token en el localStorage
-                        navigation.navigate('HorarioS')//Redirecciona a la pantalla de inicio
-                    })
-                    .catch((error) => console.log(error));
-            }
-        },
-        onReset: () => {
-            setEmail('')
-            setPassword('')
-            
-        },
-        
-    });
-    useEffect(() => {
-        //Si el usuario ya está autenticado, lo redirige a la pantalla de horario
-        if (isUserAuthenticated()) {
-            navigation.navigate('HorarioS')
+  const navigator = useNavigation();
+  const [password, setPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const showPass = () => {
+    setShowPassword(!showPassword);
+  };
+
+  /*   useEffect(() => {
+      if (isUserAuthenticated()) {
+        navigator.navigate("HorarioS");
+      }
+    }, []); */
+
+  const formik = useFormik({
+    initialValues: {
+      correo: "",
+      password: "",
+    },
+    validationSchema: Yup.object({
+      correo: Yup.string()
+        .email("Formato de email no valido")
+        .required("Email es obligatorio"),
+      password: Yup.string().required("Contraseña obligatoria"),
+    }),
+    validateOnChange: false,
+    onSubmit: async (formData) => {
+      console.log(formData);
+      try {
+        const response = await fetch(`${path}api/auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+        const result = await response.json();
+        console.log(result);
+        if (!result.error) {
+          Toast.show({
+            type: "success",
+            position: "bottom",
+            text1: "Inicio de sesión exitoso",
+          });
+
+          if (result.data.rol == "E") {
+            saveData("token", result.data.token);
+            saveData("nombre", result.data.nombre);
+            saveData("apellidos", result.data.apellidos);
+            saveData("correo", result.data.correo);
+            saveData("idUsuario", result.data.idUsuario);
+            saveData("idInstitucion", result.data.colores.idInstitucion);
+            saveData("rol", result.data.rol);
+            saveData("colorPrimario", result.data.colores.colorPrimario);
+            saveData("colorSecundario", result.data.colores.colorSecundario);
+            saveData("colorTerciario", result.data.colores.colorTerciario);
+
+            Toast.show({
+              type: "success",
+              position: "top",
+              text1: "Inicio de sesión exitoso",
+            });
+
+            setTimeout(() => {
+              navigator.navigate("HorarioS");
+            }, 1000);
+          } else {
+            Toast.show({
+              type: "error",
+              position: "top",
+              text1: "No tienes permisos para acceder a esta aplicación",
+            });
+          }
+        } else {
+          Toast.show({
+            type: "error",
+            position: "top",
+            text1: result.error,
+          });
         }
-    }, []);
+      } catch (error) {
+        console.log(error);
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: "Error al iniciar sesión",
+        });
+      }
+    },
+  });
 
-    return (
-        <KeyboardAwareScrollView>
-            <Formik>
-                initialValues={formik.initialValues}
-                onSubmit={formik.onSubmit}
-                validationSchema={formik.validationSchema}
-                onReset={formik.onReset}
-            </Formik>
-            <View style={styles.Container1} >
-                <Form>
-                    <View style={styles.Container}>
-                        <View style={styles.icon}>
-                            <Icon type='material-community' name="account" color="#FFF" size={150} />
-                        </View>
-                        <View style={styles.viewForm}>
-                            <Text style={styles.title}> Bienvenido a SIMAPI</Text>
-                            <View style={styles.inputContainer}>
-                                <Input placeholder='Correo electrónico' style={styles.inputStyle}
-                                    rightIcon={<Icon type="material-community" name="at" iconStyle={styles.Icon} />}
-                                    //onChangeText={text => setEmail(text)}//Para que se actualice el valor del email al escribir en el input
-                                    id={"email"}value={formik.values.email} onChangeText={formik.handleChange('email')}
-                                    onBlur={formik.handleBlur('email')}
-                                    //errorMessage={email ? null : "El email es obligatorio"}//Si el email es null muestra el mensaje
-                                    errorMessage={formik.errors.email}></Input>
-                            </View>
-
-                            <View style={styles.inputContainer}>
-                                <Input secureTextEntry={password ? false : true} placeholder='Contraseña' style={styles.inputStyle}
-                                    rightIcon={<Icon type="material-community" name={password ? "eye-off-outline" : "eye-outline"} iconStyle={styles.Icon}
-                                        //onPress={()=>setPassword(!password)}//Para que se muestre la contraseña al presionar el icono
-                                        onPress={showPass} />}
-                                        value={formik.values.password} id={"password"} onChangeText={formik.handleChange('password')}
-                                        onBlur={formik.handleBlur('password')}
-                                    errorMessage={formik.errors.password}></Input>
-                            </View>
-                        </View>
-
-                        {/*  <Button title="Iniciar sesión"  onPress={formik.handleSubmit} style={styles.inputStyle}
-                    containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
-                </Button> */}
-                    </View>
-                    <BtnPrimary style={styles.BtnPrimaryS} text="Iniciar sesión" type={'submit'}
-                    onPress={formik.handleSubmit}></BtnPrimary>
-                </Form>
+  return (
+    <KeyboardAwareScrollView>
+      <View style={styles.Container1}>
+        <View style={styles.Container}>
+          <View style={styles.icon}>
+            <Icon
+              type="material-community"
+              name="account"
+              color="#FFF"
+              size={150}
+            />
+          </View>
+          <View style={styles.viewForm}>
+            <Text style={styles.title}> Bienvenido a SIMAPI</Text>
+            <View style={styles.inputContainer}>
+              <Input
+                placeholder="Correo Electrónico"
+                containerStyle={styles.input}
+                rightIcon={
+                  <Icon
+                    type="material-community"
+                    name="at"
+                    iconStyle={styles.Icon}
+                  />
+                }
+                onChangeText={(text) => formik.setFieldValue("correo", text)}
+                errorMessage={formik.errors.correo}
+              />
             </View>
-        </KeyboardAwareScrollView>
-    )
+
+            <View style={styles.inputContainer}>
+              <Input
+                placeholder="Contraseña"
+                containerStyle={styles.input}
+                password={true}
+                secureTextEntry={showPassword ? false : true}
+                rightIcon={
+                  <Icon
+                    type="material-community"
+                    name={showPassword ? "eye-off-outline" : "eye-outline"}
+                    iconStyle={styles.Icon}
+                    onPress={showPass}
+                  />
+                }
+                onChangeText={(text) => formik.setFieldValue("password", text)}
+                errorMessage={formik.errors.password}
+              />
+            </View>
+          </View>
+        </View>
+        <BtnPrimary
+          style={styles.BtnPrimaryS}
+          text="Iniciar sesión"
+          type={"submit"}
+          onPress={formik.handleSubmit}
+        ></BtnPrimary>
+      </View>
+    </KeyboardAwareScrollView>
+  );
 }
 
+
 const styles = StyleSheet.create({
-    Container1: {
-        alignContent: 'center',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-        height: '95%',
-        alignContent: 'center',
-        marginTop: 20,
-    },
-    icon: {
-        alignSelf: 'center',
-        width: 159,
-        height: 159,
-        top: 100,
-        borderRadius: 100,
-        alignContent: 'center',
-        alignItems: 'center',
-        backgroundColor: colors.C_TERCIARIO,
-        zIndex: 1//Para que el icono se muestre encima del fondo, se refiere a la capa z del plano cartesiano
-    },
-    IconStyle: {
-        color: "#c1c1c1",
-        alignSelf: 'center'
-    },
-    Container: {
-        alignContent: 'center',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-        height: '85%',
-        alignContent: 'center',
-        marginTop: 20,
-        marginBottom: 0,
-
-    },
-    title: {
-        fontSize: 30,
-        color: "#000",
-        fontWeight: "bold",
-        fontStyle: "italic",
-        textAlign: 'center',
-        marginTop: 20
-    },
-    inputContainer: {
-        width: '85%',
-        height: 60,
-        marginTop: 20,
-        backgroundColor: colors.C_PRIMARIO,
-        alignSelf: 'center'
-    },
-    viewForm: {
-        paddingTop: 50,
-        marginTop: 50,
-        backgroundColor: colors.C_SECUNDARIO,
-        width: '90%',
-        height: '65%',
-        borderRadius: 20,
-        alignSelf: 'center',
-        marginBottom: 75
-    },
-    inputStyle: {
-        width: '100%',
-        marginTop: 20,
-        backgroundColor: colors.C_PRIMARIO
-    },
-    Icon: {
-        color: "#c1c1c1",
-        marginTop: 10
-    },
-    BtnPrimaryS: {
-        alignSelf: 'center'
-    }
-
-})
+  Container1: {
+    alignContent: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "88%",
+    alignContent: "center",
+    marginTop: 20,
+  },
+  icon: {
+    alignSelf: "center",
+    width: 159,
+    height: 159,
+    top: 100,
+    borderRadius: 100,
+    alignContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.C_TERCIARIO,
+    zIndex: 1,
+  },
+  IconStyle: {
+    color: "#c1c1c1",
+    alignSelf: "center",
+  },
+  Container: {
+    alignContent: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "85%",
+    alignContent: "center",
+    marginTop: 20,
+    marginBottom: 0,
+  },
+  title: {
+    fontSize: 30,
+    color: "#000",
+    fontWeight: "bold",
+    fontStyle: "italic",
+    textAlign: "center",
+    marginTop: 20,
+  },
+  inputContainer: {
+    width: "85%",
+    height: 60,
+    marginTop: 20,
+    backgroundColor: colors.C_PRIMARIO,
+    alignSelf: "center",
+    padding: 4,
+  },
+  viewForm: {
+    paddingTop: 50,
+    marginTop: 50,
+    backgroundColor: colors.C_SECUNDARIO,
+    width: "90%",
+    height: "65%",
+    borderRadius: 20,
+    alignSelf: "center",
+    marginBottom: 75,
+  },
+  inputStyle: {
+    width: "100%",
+    marginTop: 20,
+    backgroundColor: colors.C_PRIMARIO,
+  },
+  Icon: {
+    color: "#c1c1c1",
+    marginTop: 10,
+  },
+  BtnPrimaryS: {
+    alignSelf: "center",
+  },
+});

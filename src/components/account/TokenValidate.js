@@ -1,7 +1,7 @@
 import jwt_decode from 'jwt-decode'; //npm install jwt-decode
 
 export function isUserAuthenticated() {
-    const token = localStorage.getItem('token');
+    /* const token = ''//localStorage.getItem('token');
     console.log(token)
     if (!token) {
       return false;
@@ -18,5 +18,5 @@ export function isUserAuthenticated() {
       return false;
     }
     
-    return true;
+    return true; */
 }

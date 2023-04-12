@@ -5,7 +5,7 @@ import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function ExitBtn(props) {
-  const { onPress } = props;
+  const { onPress } = props;  
   return (
     <View>
       <Button buttonStyle={styles.btn} 

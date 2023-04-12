@@ -2,41 +2,51 @@ import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import React from 'react'
 import Camillas from '../components/common/Camillas';
 import ExitBtn from '../components/account/ExitBtn';
+import { getData, saveData } from '../utils/Storage';
+import { path } from '../data';
+import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Loading from '../components/common/Loading';
 
 export default function IndexScreen(props) {
-  const { navigation } = props;
 
-  console.log("entra xd a IndexScreen");
-  const camillas = [
-    {
-      id: 1,
-      camilla: "Camilla 1",
-      sala: "Sala 1",
-      paciente: "Diego Albabera Fierro",
-      expediente: "c8dhf-jrj7-098"
-    },
-    {
-      id: 2,
-      camilla: "Camilla 2",
-      sala: "Sala 1",
-      paciente: "Misael Bahena Diaz",
-      expediente: "c8dhf-jrj7-110"
-    },
-    {
-      id: 3,
-      camilla: "Camilla 4",
-      sala: "Sala 2",
-      paciente: "Yahir Diaz Gonzalez",
-      expediente: "c8dhf-jrj7-098"
-    },
-    {
-      id: 4,
-      camilla: "Camilla 4",
-      sala: "Sala 2",
-      paciente: "Johana Galvez Nito",
-      expediente: "c8dhf-jrj7-098"
-    }
-  ]
+  const [camillas, setCamillas] = useState([]);
+
+  const getCamillasEnfermera = () => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const enfermera = await getData('idUsuario');
+        const url = path + 'api/camillas/enfermera/' + enfermera;
+        console.log("URL: " + url)
+        const token = await getData('token');
+        console.log("Token: " + token);
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          }
+        });
+        const json = await response.json();
+        resolve(json);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
+
+  useEffect(() => {
+    getCamillasEnfermera().then((camillas) => {
+      setCamillas(camillas.data);
+      console.log(camillas.data);
+    }).catch((error) => {
+      console.log(error);
+    });
+  }, []);
+
+
+
+  const { navigation } = props;
 
   return (
     <ScrollView scrollEnabled={true}>
@@ -51,20 +61,22 @@ export default function IndexScreen(props) {
               navigation.navigate('LoginS')
             }} />
         </View>
-        {
-          camillas.map((camilla) => {
-            return (
-              <Camillas camilla={camilla.camilla} sala={camilla.sala} paciente={camilla.paciente} expediente={camilla.expediente}
-                key={camilla.id}
-                onPress={() => {
-                  navigation.navigate('AlarmaS', { camilla: camilla.camilla, sala: camilla.sala, paciente: camilla.paciente, expediente: camilla.expediente })
-                  console.log({ camilla: camilla.camilla, sala: camilla.sala, paciente: camilla.paciente, expediente: camilla.expediente });
-                }}
-
-              />
-            )
-          })
-        }
+        {camillas ? camillas.map((camilla) => {
+          return (
+            <Camillas camilla={camilla.idCamillas} sala={camilla.idSala} isla={camilla.idIsla} paciente={camilla.nombre} expediente={camilla.numeroExpediente} alarma={camilla.estadoAlarma}
+              key={camilla.idCamillas}
+              onPress={() => {
+                navigation.navigate('AlarmaS', { camilla: camilla.idCamillas, sala: camilla.idSala, paciente: camilla.nombre, expediente: camilla.numeroExpediente, isla: camilla.idIsla, alarma: camilla.estadoAlarma })
+                saveData('alarma', camilla.estadoAlarma);
+                console.log({ camilla: camilla.idCamillas, sala: camilla.idSala, isla: camilla.idIsla, paciente: camilla.nombre, expediente: camilla.numeroExpediente, isla: camilla.idIsla });
+              }}
+            />
+          )
+        }) : (
+          <View>
+            <Loading isVisible={true} text="Cargando camillas" />
+          </View>
+        )}
 
       </View>
     </ScrollView>
@@ -100,14 +112,3 @@ const styles = StyleSheet.create({
     textAlign: "left"
   },
 })
-/* const nombres = ['Juan', 'María', 'Pedro'];
-
-const listaNombres = nombres.map((nombre, index) => {
-  return <Text key={index}>{nombre}</Text>;
-});
-
-return (
-  <View>
-    {listaNombres}
-  </View>
-); */
