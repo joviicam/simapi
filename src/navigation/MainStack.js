@@ -7,6 +7,8 @@ import HorarioScreen from '../screens/HorarioScreen'
 import AlarmaScreen from '../screens/AlarmaScreen'
 import IndexScreen from '../screens/IndexScreen'
 import { TapGestureHandler } from 'react-native-gesture-handler'
+import ContrasenaScreen from '../screens/ContrasenaScreen'
+import CamillasGeneralScreen from '../screens/CamillasGeneralScreen'
 
 const Stack = createNativeStackNavigator()
 export default function MainStack() {
@@ -25,6 +27,9 @@ export default function MainStack() {
                 />
                 <Stack.Screen name="AlarmaS" component={AlarmaScreen} options={{ title: "Alarma" }} />
                 <Stack.Screen name="IndexS" component={IndexScreen} options={{ title: "Camillas" }} />
+                <Stack.Screen name="ContrasenaS" component={ContrasenaScreen} options={{ title: "Contrasena" }} />
+                <Stack.Screen name="CamillasGeneralS" component={CamillasGeneralScreen} options={{ title: "Camillas general" }} />
+
             </Stack.Navigator>
         </NavigationContainer>
     )

@@ -5,18 +5,50 @@ import { Button } from 'react-native-elements'
 import ExitBtn from '../components/account/ExitBtn';
 import { getData, removeData, saveData } from '../utils/Storage';
 import Toast from "react-native-toast-message";
+import { path } from '../data';
+import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Loading from '../components/common/Loading';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function HorarioScreen(props) {
   const { navigation } = props;
-  function isUserAuthenticated() {
-    const token = getData("token");
-    return token != null;
+  const [token, setToken] = useState(null);
+  const getToken = async () => {
+    const token = await getData('token');
+    setToken(token);
   }
 
-  async function getToken() {
-    const token = await getData("token");
-    return token;
-  }
+  getToken();
+
+  const AsignarTurno = (turnoSelect) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        console.log("Token xd: " + token);
+        const enfermera = await getData('idUsuario');
+        console.log("EnfermeraA: " + enfermera);
+        const url = path + 'api/enfermeras/' + enfermera;
+        console.log("URL: " + url)
+        console.log("turno select: " + turnoSelect);
+        const response = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            turno: turnoSelect
+          })
+        });
+        const json = await response.json();
+        console.log(json);
+        resolve(json);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
+
 
   // obtener hora actual
   const date = new Date();
@@ -104,12 +136,30 @@ export default function HorarioScreen(props) {
             }, 60000) */
       return (
         <View key={4}>
-          <Button title={<Text style={styles.textStyle}>{"No hay horario disponible"}</Text>}
+          <Button title={<Text style={styles.textStyle}>{"Matutino"}</Text>}
             onPress={() => {
-              navigation.navigate("IndexS");
-              //saveData("token", null);
+              //navegar a index y mandar por parametro el turno
+              navigation.navigate("IndexS",{ mensaje: 'Matutino' });
+              saveData("turno", "Matutino");
+              AsignarTurno("Matutino");
             }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
           </Button>
+          <Button title={<Text style={styles.textStyle} >{"Vespertino"}</Text>}
+            onPress={() => {
+              navigation.navigate("IndexS",{ mensaje: 'Vespertino' });
+              saveData("turno", "Vespertino");
+              AsignarTurno("Vespertino");
+
+            }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
+          </Button>
+          <Button title={<Text style={styles.textStyle} >{"Nocturno"}</Text>}
+            onPress={() => {
+              navigation.navigate("IndexS",{ mensaje: 'Nocturno' });
+              saveData("turno", "Nocturno");
+              AsignarTurno("Nocturno");
+            }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
+          </Button>
+
         </View>
       )
     }
@@ -158,7 +208,7 @@ const styles = StyleSheet.create({
     marginTop: 30
   },
   ContainerBtn: {
-    width: '90%',
+    width: '60%',
     marginTop: 10,
     alignSelf: 'center'
   },
@@ -166,7 +216,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.C_PRIMARIO,
     borderRadius: 10,
     marginBottom: 50,
-    height: 150,
+    height: 100,
     width: 220
   },
   ExitBtnContainer: {

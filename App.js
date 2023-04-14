@@ -1,5 +1,5 @@
-import React from "react";
 import 'react-native-gesture-handler';
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import LoginForm from "./src/components/account/LoginForm";
 import { LogBox } from 'react-native'; // sirve para quitar los warnings

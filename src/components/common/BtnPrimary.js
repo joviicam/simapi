@@ -8,7 +8,7 @@ export default function BtnPrimary(props) {
     return (
         <View>
             <Button title={<Text style={styles.textStyle}>{text}</Text>} style={styles.inputStyle}
-                onPress={onPress} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
+                onPress={onPress} buttonStyle={styles.btn}>
             </Button>
         </View>
     )

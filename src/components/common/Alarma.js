@@ -9,6 +9,7 @@ import { path } from '../../data'
 import { getData } from '../../utils/Storage'
 
 export default function Alarma(props) {
+    const { navigation } = props;
     console.log("Alarma")
     const { camilla, sala, paciente, expediente, alarma } = props;
     console.log({ camilla: camilla, sala: sala, paciente: paciente, expediente: expediente, alarma: alarma })

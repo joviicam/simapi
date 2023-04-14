@@ -7,10 +7,17 @@ import { path } from '../data';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../components/common/Loading';
+import { Button } from 'react-native-elements';
+import { Input } from 'react-native-elements'
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-export default function IndexScreen(props) {
-
+export default function IndexScreen() {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const turno = route.params.mensaje; //FER AQUI RECIBES EL TURNO
+  console.log("Horario: " + turno);
   const [camillas, setCamillas] = useState([]);
+  const [filteredCamillas, setFilteredCamillas] = useState([]);
 
   const getCamillasEnfermera = () => {
     return new Promise(async (resolve, reject) => {
@@ -44,9 +51,20 @@ export default function IndexScreen(props) {
     });
   }, []);
 
-
-
-  const { navigation } = props;
+  const searchFilterFunction = (text) => {
+    if (text) {
+      const newData = camillas.filter(item => {
+        //Buscar por nombre
+        const itemData = item.nombre ? item.nombre.toUpperCase() : ''.toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      })
+      setFilteredCamillas(newData);
+      console.log(newData);
+    } else {
+      setFilteredCamillas(camillas);
+    }
+  }
 
   return (
     <ScrollView scrollEnabled={true}>
@@ -61,9 +79,15 @@ export default function IndexScreen(props) {
               navigation.navigate('LoginS')
             }} />
         </View>
-        {camillas ? camillas.map((camilla) => {
+        <View style={styles.SearchInput}>
+          <Input placeholder='Buscar'
+            onChangeText={(text) => searchFilterFunction(text)}>
+          </Input>
+        </View>
+
+        {filteredCamillas ? filteredCamillas.map((camilla) => {
           return (
-            <Camillas camilla={camilla.idCamillas} sala={camilla.idSala} isla={camilla.idIsla} paciente={camilla.nombre} expediente={camilla.numeroExpediente} alarma={camilla.estadoAlarma}
+            <Camillas camilla={camilla.idCamillas} sala={camilla.idSala} isla={camilla.idIsla} paciente={camilla.nombre} expediente={camilla.numeroExpediente} estadoAlarma={camilla.estadoAlarma}
               key={camilla.idCamillas}
               onPress={() => {
                 navigation.navigate('AlarmaS', { camilla: camilla.idCamillas, sala: camilla.idSala, paciente: camilla.nombre, expediente: camilla.numeroExpediente, isla: camilla.idIsla, alarma: camilla.estadoAlarma })
@@ -77,7 +101,12 @@ export default function IndexScreen(props) {
             <Loading isVisible={true} text="Cargando camillas" />
           </View>
         )}
-
+        <Button onPress={() => {
+          navigation.navigate('ContrasenaS')
+        }} title={'Da click para cambiar la contraseña'}></Button>
+        <Button onPress={() => {
+          navigation.navigate('CamillasGeneralS')
+        }} title={'Camillas general'}></Button>
       </View>
     </ScrollView>
   )
@@ -111,4 +140,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "left"
   },
+  SearchInput: {
+    padding: 5,
+    width: 300,
+    height: 60,
+    color: "white",
+    borderRadius: 10,
+    backgroundColor: "#E5E5E5",
+    marginBottom: 20
+}
 })
