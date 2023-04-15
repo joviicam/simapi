@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../components/common/Loading';
 import { useFocusEffect } from '@react-navigation/native';
+import AccountBtn from '../components/account/AccountBtn';
 
 export default function HorarioScreen(props) {
   const { navigation } = props;
@@ -49,8 +50,7 @@ export default function HorarioScreen(props) {
     });
   };
 
-
-  // obtener hora actual
+ // obtener hora actual
   const date = new Date();
   const hour = date.getHours();
   const minutes = date.getMinutes();
@@ -139,14 +139,14 @@ export default function HorarioScreen(props) {
           <Button title={<Text style={styles.textStyle}>{"Matutino"}</Text>}
             onPress={() => {
               //navegar a index y mandar por parametro el turno
-              navigation.navigate("IndexS",{ mensaje: 'Matutino' });
+              navigation.navigate("IndexS", { mensaje: 'Matutino' });
               saveData("turno", "Matutino");
               AsignarTurno("Matutino");
             }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
           </Button>
           <Button title={<Text style={styles.textStyle} >{"Vespertino"}</Text>}
             onPress={() => {
-              navigation.navigate("IndexS",{ mensaje: 'Vespertino' });
+              navigation.navigate("IndexS", { mensaje: 'Vespertino' });
               saveData("turno", "Vespertino");
               AsignarTurno("Vespertino");
 
@@ -154,7 +154,7 @@ export default function HorarioScreen(props) {
           </Button>
           <Button title={<Text style={styles.textStyle} >{"Nocturno"}</Text>}
             onPress={() => {
-              navigation.navigate("IndexS",{ mensaje: 'Nocturno' });
+              navigation.navigate("IndexS", { mensaje: 'Nocturno' });
               saveData("turno", "Nocturno");
               AsignarTurno("Nocturno");
             }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
@@ -168,6 +168,13 @@ export default function HorarioScreen(props) {
 
   return getToken() != null ? (
     <View>
+      <View style={styles.AccountBtnContainer}>
+        <AccountBtn
+          onPress={() => {
+            navigation.navigate('ContrasenaS')
+          }}
+        />
+      </View>
       <View style={styles.ExitBtnContainer}>
         <ExitBtn onPress={() => {
           navigation.navigate("LoginS");
@@ -223,5 +230,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     marginTop: 10,
     marginRight: 10
+  },
+  AccountBtnContainer: {
+    position: "absolute",
+    marginTop: 10,
+    right: 70,
+    zIndex: 1
   }
 })
