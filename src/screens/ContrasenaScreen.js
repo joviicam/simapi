@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     btn: {
-        backgroundColor: colors.C_PRIMARIO,
+        backgroundColor: colors.C_TERCIARIO,
         borderRadius: 10,
         marginHorizontal: 20,
         color: "red",
