@@ -16,7 +16,7 @@ export default function CamillaShow() {
             <View >
                 <View style={styles.btn}>
                     <Text style={styles.textStyle}>
-                        {"Sala: "}{sala}{'\nNombre: \n'}{paciente}{'\nN° Expediente: \n'}{expediente}
+                        {"Sala: "}{sala}{'\nNombre: '}{paciente}{'\nN° Expediente: '}{expediente}
                     </Text>
                 </View>
             </View>
@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         paddingHorizontal: 20,
         paddingVertical: 10,
+        justifyContent: "center",
     },
     textStyle: {
         fontSize: 20,

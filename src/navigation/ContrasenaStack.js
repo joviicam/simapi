@@ -8,7 +8,7 @@ const Stack = createNativeStackNavigator();// Crear un stack navigator
 export default function ContrasenaStack() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="ContrasenaS" component={<ContrasenaScreen />} options={{ title: "Contrasena" }} />
+            <Stack.Screen name="ContrasenaS" component={<ContrasenaScreen />} options={{ title: "Cuenta" }} />
         </Stack.Navigator>
     )
 }

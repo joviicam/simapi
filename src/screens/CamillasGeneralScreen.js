@@ -8,6 +8,8 @@ import Loading from '../components/common/Loading'
 import ExitBtn from '../components/account/ExitBtn'
 import { getData } from '../utils/Storage'
 import { Input } from 'react-native-elements'
+import AccountBtn from '../components/account/AccountBtn';
+
 
 export default function CamillasGeneralScreen(props) {
 
@@ -56,8 +58,10 @@ export default function CamillasGeneralScreen(props) {
             const newData = camillas.filter(item => {
                 //Buscar por nombre
                 const itemData = item.nombre ? item.nombre.toUpperCase() : ''.toUpperCase();
+                const expedienteData = item.numeroExpediente ? item.numeroExpediente.toString() : '';
                 const textData = text.toUpperCase();
-                return itemData.indexOf(textData) > -1;
+                return itemData.indexOf(textData) > -1 || expedienteData.indexOf(textData) > -1;
+
             })
             setFilteredCamillas(newData);
             console.log(newData);
@@ -71,6 +75,13 @@ export default function CamillasGeneralScreen(props) {
             <View style={styles.Container}>
                 <View style={styles.textContainer}>
                     <Text style={styles.TextStyle}>Camillas general:</Text>
+                </View>
+                <View style={styles.AccountBtnContainer}>
+                    <AccountBtn
+                        onPress={() => {
+                            navigation.navigate('ContrasenaS')
+                        }}
+                    />
                 </View>
 
                 <View style={styles.ExitBtnContainer}>
@@ -143,5 +154,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: "#E5E5E5",
         marginBottom: 20
+    },
+    AccountBtnContainer: {
+        position: "absolute",
+        marginTop: -20,
+        right: 70,
+        zIndex: 1
     }
 })

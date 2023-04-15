@@ -9,37 +9,29 @@ import Toast from "react-native-toast-message";
 export default function ExitBtn(props) {
   const { onPress } = props;
 
-  const Logout = () => {
-    removeData("token");
-    removeData("nombre");
-    removeData("apellidos");
-    removeData("correo");
-    removeData("idUsuario");
-    removeData("idInstitucion");
-    removeData("rol");
-    removeData("colorPrimario");
-    removeData("colorSecundario");
-    removeData("colorTerciario");
-
-    Toast.show({
-      type: "success",
-      position: "bottom",
-      text1: "Sesión cerrada",
-    });
-  }
 
   return (
     <View>
       <Button buttonStyle={styles.btn}
         icon={<Icon type="material-community" name="logout" iconStyle={styles.Icon} size={40} />}
-        onPress={
-          onPress
-          /* Toast.show({
+        onPress={() => {     
+          removeData("token");
+          removeData("nombre");
+          removeData("apellidos");
+          removeData("correo");
+          removeData("idUsuario");
+          removeData("idInstitucion");
+          removeData("rol");
+          removeData("colorPrimario");
+          removeData("colorSecundario");
+          removeData("colorTerciario");
+          Toast.show({
             type: "success",
             position: "bottom",
             text1: "Sesión cerrada",
-          }); */
-        }>
+          });
+          onPress();
+        }}>
       </Button>
     </View>
   )

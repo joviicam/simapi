@@ -13,7 +13,7 @@ export default function Camillas(props) {
     useEffect(() => {
         const intervalId = setInterval(() => {
             setIsChangingColor(prevState => !prevState);
-        }, 1000);
+        }, 700);
 
         return () => clearInterval(intervalId);
     }, []);
@@ -36,7 +36,7 @@ export default function Camillas(props) {
     return (
         <View >
             <Button title={<Text style={styles.textStyle} >
-                {"Nombre: \n"}{paciente} {'\n\n'}{"N° Expediente: \n"}{expediente}</Text>}
+            {"Sala: "}{sala}{'\nNombre: '}{paciente}{'\nN° Expediente: '}{expediente}</Text>}
                 onPress={onPress}
                 buttonStyle={[styles.btn, { backgroundColor }]} >
             </Button>
@@ -48,9 +48,10 @@ const styles = StyleSheet.create({
 
     btn: {
         width: 300,
-        height: 200,
+        height: 180,
         borderRadius: 10,
         marginBottom: 20,
+        justifyContent: "center"
     },
     textStyle: {
         fontSize: 20,

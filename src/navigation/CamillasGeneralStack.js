@@ -7,7 +7,7 @@ const Stack = createNativeStackNavigator();// Crear un stack navigator
 export default function CamillasGeneralStack() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="CamillasGeneralS" component={<CamillasGeneralScreen />} options={{ title: "Camillas general" }} />
+            <Stack.Screen name="CamillasGeneralS" component={<CamillasGeneralScreen />} options={{ title: "Camillas" }} />
         </Stack.Navigator>
     )
 }

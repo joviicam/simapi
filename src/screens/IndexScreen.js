@@ -5,12 +5,14 @@ import ExitBtn from '../components/account/ExitBtn';
 import { getData, saveData } from '../utils/Storage';
 import { path } from '../data';
 import { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../components/common/Loading';
 import { Button } from 'react-native-elements';
 import { Input } from 'react-native-elements'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import colors from '../utils/colors';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AccountBtn from '../components/account/AccountBtn';
+import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
 export default function IndexScreen() {
   const route = useRoute();
@@ -57,13 +59,17 @@ export default function IndexScreen() {
   const searchFilterFunction = (text) => {
     if (text) {
       const newData = camillas.filter(item => {
-        //Buscar por nombre
+        //Buscar por expediente del paciente o por nombre del paciente    
         const itemData = item.nombre ? item.nombre.toUpperCase() : ''.toUpperCase();
+        const expedienteData = item.numeroExpediente ? item.numeroExpediente.toString() : '';
+
         const textData = text.toUpperCase();
-        return itemData.indexOf(textData) > -1;
+        return itemData.indexOf(textData) > -1 || expedienteData.indexOf(textData) > -1;
       })
       setFilteredCamillas(newData);
       console.log(newData);
+      
+      
     } else {
       setFilteredCamillas(camillas);
     }
@@ -75,7 +81,13 @@ export default function IndexScreen() {
         <View style={styles.textContainer}>
           <Text style={styles.TextStyle}>Camillas asignadas:</Text>
         </View>
-
+        <View style={styles.AccountBtnContainer}>
+          <AccountBtn
+            onPress={() => {
+              navigation.navigate('ContrasenaS')
+            }}
+          />
+        </View>
         <View style={styles.ExitBtnContainer}>
           <ExitBtn
             onPress={() => {
@@ -106,9 +118,7 @@ export default function IndexScreen() {
             <Loading isVisible={true} text="Cargando camillas" />
           </View>
         )}
-        <Button onPress={() => {
-          navigation.navigate('ContrasenaS')
-        }} title={'Da click para cambiar la contraseña'} buttonStyle={styles.btn}></Button>
+        
       </View>
     </ScrollView>
   )
@@ -167,4 +177,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: colors.C_PRIMARIO,
   },
+  AccountBtnContainer: {
+    position: "absolute",
+    marginTop: -20,
+    right: 70,
+    zIndex: 1
+  }
 })

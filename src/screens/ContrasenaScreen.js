@@ -5,9 +5,56 @@ import { TextInput, Button } from 'react-native';
 import colors from '../utils/colors';
 import Toast from 'react-native-toast-message';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import { Input } from 'react-native-elements';
+import { getData, saveData } from '../utils/Storage';
+import { path } from '../data';
+import { useEffect } from 'react';
+import { Icon, ListItem } from "react-native-elements";
+import { map } from "lodash";
 
 export default function ContrasenaScreen(props) {
+    //guardar datos de la enfermera
+    const [nombre, setNombre] = useState('');
+    const [correo, setCorreo] = useState('');
+    const [apellidos,setApellidos] = useState('');
+
+    const getInfoEnfermera = () => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const enfermera = await getData('idUsuario');
+                const url = path + 'api/usuarios/' + enfermera;
+                console.log("URL: " + url)
+                const token = await getData('token');
+                console.log("Token: " + token);
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                const json = await response.json();
+                resolve(json);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    };
+
+    useEffect(() => {
+        getInfoEnfermera().then((enfermera) => {
+            setNombre(enfermera.data.nombre);
+            setCorreo(enfermera.data.correo);
+            setApellidos(enfermera.data.apellidos);
+            
+            console.log("Enfermera: " + enfermera.data.nombre)
+            console.log("Correo: " + enfermera.data.correo)
+            console.log("Apellidos: " + enfermera.data.apellidos)
+        }).catch((error) => {
+            console.log(error);
+        });
+    }, []);
+
     const { navigation } = props;
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -32,70 +79,101 @@ export default function ContrasenaScreen(props) {
         }
     }
 
+    const optionsMenu = getOptionMenu();
+
     return (
         <KeyboardAwareScrollView>
+            <View style={styles.DatosStyle}>
+                <Text style={styles.NombreStyle}>{nombre} {apellidos}</Text>
+                <Text style={styles.CorreoStyle}>{correo}</Text>
+            </View>
+            {map(optionsMenu, (option, index) => (  //map es una funcion de lodash que recorre un array de objetos
+                //option es cada objeto del array y index es el indice de cada objeto
+                //ListItem es un componente de react-native-elements que renderiza un item de una lista 
+                <ListItem key={index} style={styles.menuItem}>
+                    <Icon
+                        type={option.typeIcon}
+                        name={option.nameIconLeft}
+                        color={option.colorIcon}
+                    />
+                    <ListItem.Content>
+                        <ListItem.Title>{option.title}</ListItem.Title>
+                    </ListItem.Content>
 
-            <View style={styles.Container}>
-                <Text style={styles.TextStyle}>Cambiar contraseña</Text>
+                </ListItem>
+            ))}
+
+            <View style={styles.container}>
+                <Text style={styles.label}>Contraseña actual:</Text>
                 <TextInput
+                    secureTextEntry
                     style={styles.input}
                     value={oldPassword}
-                    placeholder="Contraseña actual"
-                    secureTextEntry={true}
-                    onChangeText={(text) => setOldPassword(text)}
+                    onChangeText={setOldPassword}
                 />
+
+                <Text style={styles.label}>Nueva contraseña:</Text>
                 <TextInput
+                    secureTextEntry
                     style={styles.input}
                     value={newPassword}
-                    placeholder="Nueva contraseña"
-                    secureTextEntry={true}
-                    onChangeText={(text) => setNewPassword(text)}
+                    onChangeText={setNewPassword}
                 />
+
+                <Text style={styles.label}>Confirmar contraseña:</Text>
                 <TextInput
+                    secureTextEntry
                     style={styles.input}
                     value={confirmPassword}
-                    placeholder="Confirmar nueva contraseña"
-                    secureTextEntry={true}
-                    onChangeText={(text) => setConfirmPassword(text)}
+                    onChangeText={setConfirmPassword}
                 />
-                <View style={styles.btnContainer}>
-                    <Button
-                        buttonStyle={styles.btn}
-                        title="Cambiar contraseña"
-                        onPress={() => {
-                            handleChangePassword();
-                        }}
-                        disabled={!oldPassword || !newPassword || !confirmPassword}
-                    />
-                </View>
-                
+
+                <Button
+                    buttonStyle={styles.btn}
+                    title="Cambiar contraseña"
+                    onPress={() => {
+                        handleChangePassword();
+                    }}
+                    disabled={!oldPassword || !newPassword || !confirmPassword}
+                />
             </View>
-            
+
         </KeyboardAwareScrollView>
     )
 }
 
+function getOptionMenu() {
+    return [
+        {
+            title: "Cambiar contraseña",
+            typeIcon: "material-community",
+            nameIconLeft: "lock-reset",
+            nameIconRight: "chevron-right",
+            colorIcon: "#0d5bd7",
+        }
+    ];
+}
+
+
 const styles = StyleSheet.create({
-    Container: {
-        flex: 1,
-        marginHorizontal: 20,
-        marginTop: 120,
-        marginBottom: 150,
+    container: {
+        margin: 20,
         backgroundColor: colors.C_SECUNDARIO,
-        height: 400,
-        width: "90%",
         borderRadius: 10,
-        borderColor: 'white',
-        justifyContent: "center",
+        padding: 20,
+        marginTop: 20,
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 5,
     },
     input: {
-        height: 50,
-        marginVertical: 10,
-        marginHorizontal: 20,
         borderWidth: 1,
-        padding: 10,
+        borderColor: '#ccc',
+        backgroundColor: '#fff',
         borderRadius: 5,
-        backgroundColor: 'white',
+        padding: 10,
         marginBottom: 20,
     },
     btn: {
@@ -114,8 +192,35 @@ const styles = StyleSheet.create({
     btnContainer: {
         flex: 1,
         justifyContent: "flex-end",
-        marginBottom: 36,
+        marginBottom: 20,
         marginHorizontal: 20,
+        marginTop: -200,
     },
-
+    DatosStyle: {
+        alignSelf: "center",
+        marginTop: 30,
+        marginBottom: 0,
+    },
+    NombreStyle: {
+        fontSize: 20,
+        fontWeight: "bold",
+        alignSelf: "center",
+        marginBottom: 10,
+    },
+    CorreoStyle: {
+        fontSize: 17,
+        alignSelf: "center",
+        marginBottom: 30,
+    },
+    menuItem: {
+        borderBottomWidth: 1,
+        borderBottomColor: "#E3E3E3",
+    },
+    passSyle: {
+        fontSize: 16,
+        fontWeight: "bold",
+        alignSelf: "flex-start",
+        marginBottom: 10,
+        marginTop: 10,
+    },
 })

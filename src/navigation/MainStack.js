@@ -27,8 +27,8 @@ export default function MainStack() {
                 />
                 <Stack.Screen name="AlarmaS" component={AlarmaScreen} options={{ title: "Alarma" }} />
                 <Stack.Screen name="IndexS" component={IndexScreen} options={{ title: "Camillas" }} />
-                <Stack.Screen name="ContrasenaS" component={ContrasenaScreen} options={{ title: "Contrasena" }} />
-                <Stack.Screen name="CamillasGeneralS" component={CamillasGeneralScreen} options={{ title: "Camillas general" }} />
+                <Stack.Screen name="ContrasenaS" component={ContrasenaScreen} options={{ title: "Cuenta" }} />
+                <Stack.Screen name="CamillasGeneralS" component={CamillasGeneralScreen} options={{ title: "Camillas" }} />
 
             </Stack.Navigator>
         </NavigationContainer>
