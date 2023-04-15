@@ -10,6 +10,7 @@ import Loading from '../components/common/Loading';
 import { Button } from 'react-native-elements';
 import { Input } from 'react-native-elements'
 import { useNavigation, useRoute } from '@react-navigation/native';
+import colors from '../utils/colors';
 
 export default function IndexScreen() {
   const route = useRoute();
@@ -23,7 +24,7 @@ export default function IndexScreen() {
     return new Promise(async (resolve, reject) => {
       try {
         const enfermera = await getData('idUsuario');
-        const url = path + 'api/camillas/enfermera/' + enfermera;
+        const url = path + 'api/camillas/enfermera/' + enfermera + '/turno/' + turno;
         console.log("URL: " + url)
         const token = await getData('token');
         console.log("Token: " + token);
@@ -45,6 +46,8 @@ export default function IndexScreen() {
   useEffect(() => {
     getCamillasEnfermera().then((camillas) => {
       setCamillas(camillas.data);
+      console.log("Camillas Enfermera: ")
+      setFilteredCamillas(camillas.data);
       console.log(camillas.data);
     }).catch((error) => {
       console.log(error);
@@ -84,7 +87,9 @@ export default function IndexScreen() {
             onChangeText={(text) => searchFilterFunction(text)}>
           </Input>
         </View>
-
+        <Button onPress={() => {
+          navigation.navigate('CamillasGeneralS')
+        }} title={'Camillas general'} buttonStyle={styles.btn1}></Button>
         {filteredCamillas ? filteredCamillas.map((camilla) => {
           return (
             <Camillas camilla={camilla.idCamillas} sala={camilla.idSala} isla={camilla.idIsla} paciente={camilla.nombre} expediente={camilla.numeroExpediente} estadoAlarma={camilla.estadoAlarma}
@@ -103,10 +108,7 @@ export default function IndexScreen() {
         )}
         <Button onPress={() => {
           navigation.navigate('ContrasenaS')
-        }} title={'Da click para cambiar la contraseña'}></Button>
-        <Button onPress={() => {
-          navigation.navigate('CamillasGeneralS')
-        }} title={'Camillas general'}></Button>
+        }} title={'Da click para cambiar la contraseña'} buttonStyle={styles.btn}></Button>
       </View>
     </ScrollView>
   )
@@ -148,5 +150,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#E5E5E5",
     marginBottom: 20
-}
+  },
+  btn: {
+    marginTop: 5,
+    marginBottom: 5,
+    width: 300,
+    height: 60,
+    borderRadius: 10,
+    backgroundColor: colors.C_PRIMARIO,
+  },
+  btn1: {
+    marginTop: 5,
+    marginBottom: 15,
+    width: 300,
+    height: 60,
+    borderRadius: 10,
+    backgroundColor: colors.C_PRIMARIO,
+  },
 })
