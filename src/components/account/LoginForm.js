@@ -9,7 +9,6 @@ import colors from "../../utils/colors";
 import { useNavigation } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import BtnPrimary from "../common/BtnPrimary";
-import { isUserAuthenticated } from "../account/TokenValidate";
 import { saveData, getData } from "../../utils/Storage";
 import { path } from "../../data";
 import { useRoute } from "@react-navigation/native";
