@@ -9,9 +9,13 @@ import ExitBtn from '../components/account/ExitBtn'
 import { getData } from '../utils/Storage'
 import { Input } from 'react-native-elements'
 import AccountBtn from '../components/account/AccountBtn';
-
+import { useRoute } from '@react-navigation/native'
+import { Icon } from 'react-native-elements'
 
 export default function CamillasGeneralScreen(props) {
+    const route = useRoute();
+    const password = route.params.password;
+    console.log("PasswordGeneral: " + password);
 
     const [camillas, setCamillas] = useState([]);
     const [filteredCamillas, setFilteredCamillas] = useState([]);
@@ -79,7 +83,7 @@ export default function CamillasGeneralScreen(props) {
                 <View style={styles.AccountBtnContainer}>
                     <AccountBtn
                         onPress={() => {
-                            navigation.navigate('ContrasenaS')
+                            navigation.navigate('ContrasenaS', { password: password })
                         }}
                     />
                 </View>
@@ -91,7 +95,15 @@ export default function CamillasGeneralScreen(props) {
                         }} />
                 </View>
                 <View style={styles.SearchInput}>
-                    <Input placeholder='Buscar'
+                    <Input
+                        rightIcon={
+                            <Icon
+                                type="material-community"
+                                name="magnify"
+                                size={30}
+                            />
+                        }
+                        placeholder='Buscar'
                         onChangeText={(text) => searchFilterFunction(text)}>
                     </Input>
                 </View>
@@ -153,7 +165,8 @@ const styles = StyleSheet.create({
         color: "white",
         borderRadius: 10,
         backgroundColor: "#E5E5E5",
-        marginBottom: 20
+        marginBottom: 20,
+        marginTop: 20
     },
     AccountBtnContainer: {
         position: "absolute",

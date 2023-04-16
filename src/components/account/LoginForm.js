@@ -12,6 +12,7 @@ import BtnPrimary from "../common/BtnPrimary";
 import { saveData, getData } from "../../utils/Storage";
 import { path } from "../../data";
 import { useRoute } from "@react-navigation/native";
+import Loading from "../common/Loading";
 
 
 export default function LoginForm({ navigation }) {
@@ -19,18 +20,12 @@ export default function LoginForm({ navigation }) {
   const route = useRoute();
 
   const navigator = useNavigation();
-  const [password, setPassword] = useState(false);
+  const [pass,SetPass] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const showPass = () => {
     setShowPassword(!showPassword);
   };
-
-  /*   useEffect(() => {
-      if (isUserAuthenticated()) {
-        navigator.navigate("HorarioS");
-      }
-    }, []); */
 
   const formik = useFormik({
     initialValues: {
@@ -62,8 +57,9 @@ export default function LoginForm({ navigation }) {
             position: "bottom",
             text1: "Inicio de sesión exitoso",
           });
-
+          
           if (result.data.rol == "E") {
+            
             saveData("token", result.data.token);
             saveData("nombre", result.data.nombre);
             saveData("apellidos", result.data.apellidos);
@@ -74,16 +70,16 @@ export default function LoginForm({ navigation }) {
             saveData("colorPrimario", result.data.colores.colorPrimario);
             saveData("colorSecundario", result.data.colores.colorSecundario);
             saveData("colorTerciario", result.data.colores.colorTerciario);
-
             Toast.show({
               type: "success",
               position: "top",
               text1: "Inicio de sesión exitoso",
             });
-
+            //Saca el password del usuario            
+            //Espera 1 segundo para que se guarde el password y lo envia a la siguiente pantalla
             setTimeout(() => {
-              navigator.navigate("HorarioS");
-            }, 1000);
+              navigator.replace("HorarioS",{ password: pass});
+            }, 2000);
           } else {
             Toast.show({
               type: "error",
@@ -95,7 +91,7 @@ export default function LoginForm({ navigation }) {
           Toast.show({
             type: "error",
             position: "top",
-            text1: result.error,
+            text1: "Credenciales incorrectas",
           });
         }
       } catch (error) {
@@ -153,7 +149,10 @@ export default function LoginForm({ navigation }) {
                     onPress={showPass}
                   />
                 }
-                onChangeText={(text) => formik.setFieldValue("password", text)}
+                onChangeText={(text) => {
+                  formik.setFieldValue("password", text)
+                  SetPass(text);
+              }}
                 errorMessage={formik.errors.password}
               />
             </View>

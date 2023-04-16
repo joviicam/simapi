@@ -11,9 +11,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../components/common/Loading';
 import { useFocusEffect } from '@react-navigation/native';
 import AccountBtn from '../components/account/AccountBtn';
-
+import { useRoute } from '@react-navigation/native';
 export default function HorarioScreen(props) {
+  const route = useRoute();
+  const password= route.params.password; //FER AQUI RECIBES EL TURNO
   const { navigation } = props;
+  console.log("Password2: " + password);
   const [token, setToken] = useState(null);
   const getToken = async () => {
     const token = await getData('token');
@@ -139,14 +142,14 @@ export default function HorarioScreen(props) {
           <Button title={<Text style={styles.textStyle}>{"Matutino"}</Text>}
             onPress={() => {
               //navegar a index y mandar por parametro el turno
-              navigation.navigate("IndexS", { mensaje: 'Matutino' });
+              navigation.replace("IndexS", { mensaje: 'Matutino', password: password });
               saveData("turno", "Matutino");
               AsignarTurno("Matutino");
             }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
           </Button>
           <Button title={<Text style={styles.textStyle} >{"Vespertino"}</Text>}
             onPress={() => {
-              navigation.navigate("IndexS", { mensaje: 'Vespertino' });
+              navigation.replace("IndexS", { mensaje: 'Vespertino' , password: password});
               saveData("turno", "Vespertino");
               AsignarTurno("Vespertino");
 
@@ -154,7 +157,7 @@ export default function HorarioScreen(props) {
           </Button>
           <Button title={<Text style={styles.textStyle} >{"Nocturno"}</Text>}
             onPress={() => {
-              navigation.navigate("IndexS", { mensaje: 'Nocturno' });
+              navigation.replace("IndexS", { mensaje: 'Nocturno', password: password });
               saveData("turno", "Nocturno");
               AsignarTurno("Nocturno");
             }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
@@ -171,7 +174,7 @@ export default function HorarioScreen(props) {
       <View style={styles.AccountBtnContainer}>
         <AccountBtn
           onPress={() => {
-            navigation.navigate('ContrasenaS')
+            navigation.navigate('ContrasenaS', { password: password })
           }}
         />
       </View>

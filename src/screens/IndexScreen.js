@@ -18,6 +18,8 @@ export default function IndexScreen() {
   const route = useRoute();
   const navigation = useNavigation();
   const turno = route.params.mensaje; //FER AQUI RECIBES EL TURNO
+  const password = route.params.password;
+  console.log("Password: " + password);
   console.log("Horario: " + turno);
   const [camillas, setCamillas] = useState([]);
   const [filteredCamillas, setFilteredCamillas] = useState([]);
@@ -68,8 +70,8 @@ export default function IndexScreen() {
       })
       setFilteredCamillas(newData);
       console.log(newData);
-      
-      
+
+
     } else {
       setFilteredCamillas(camillas);
     }
@@ -84,7 +86,7 @@ export default function IndexScreen() {
         <View style={styles.AccountBtnContainer}>
           <AccountBtn
             onPress={() => {
-              navigation.navigate('ContrasenaS')
+              navigation.navigate('ContrasenaS', { password: password })
             }}
           />
         </View>
@@ -95,19 +97,27 @@ export default function IndexScreen() {
             }} />
         </View>
         <View style={styles.SearchInput}>
-          <Input placeholder='Buscar'
+          <Input rightIcon={
+            <Icon
+              type="material-community"
+              name="magnify"
+              size={30}
+            />
+          }
+            placeholder='Buscar'
             onChangeText={(text) => searchFilterFunction(text)}>
+
           </Input>
         </View>
         <Button onPress={() => {
-          navigation.navigate('CamillasGeneralS')
+          navigation.navigate('CamillasGeneralS', { password: password })
         }} title={'Camillas general'} buttonStyle={styles.btn1}></Button>
         {filteredCamillas ? filteredCamillas.map((camilla) => {
           return (
             <Camillas camilla={camilla.idCamillas} sala={camilla.idSala} isla={camilla.idIsla} paciente={camilla.nombre} expediente={camilla.numeroExpediente} estadoAlarma={camilla.estadoAlarma}
               key={camilla.idCamillas}
               onPress={() => {
-                navigation.navigate('AlarmaS', { camilla: camilla.idCamillas, sala: camilla.idSala, paciente: camilla.nombre, expediente: camilla.numeroExpediente, isla: camilla.idIsla, alarma: camilla.estadoAlarma })
+                navigation.navigate('AlarmaS', { camilla: camilla.idCamillas, sala: camilla.idSala, paciente: camilla.nombre, expediente: camilla.numeroExpediente, isla: camilla.idIsla, alarma: camilla.estadoAlarma, password: password })
                 saveData('alarma', camilla.estadoAlarma);
                 console.log({ camilla: camilla.idCamillas, sala: camilla.idSala, isla: camilla.idIsla, paciente: camilla.nombre, expediente: camilla.numeroExpediente, isla: camilla.idIsla });
               }}
@@ -118,7 +128,7 @@ export default function IndexScreen() {
             <Loading isVisible={true} text="Cargando camillas" />
           </View>
         )}
-        
+
       </View>
     </ScrollView>
   )
