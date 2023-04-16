@@ -139,24 +139,24 @@ export default function HorarioScreen(props) {
           <Button title={<Text style={styles.textStyle}>{"Matutino"}</Text>}
             onPress={() => {
               //navegar a index y mandar por parametro el turno
-              navigation.navigate("IndexS", { mensaje: 'Matutino' });
-              saveData("turno", "Matutino");
-              AsignarTurno("Matutino");
+              navigation.navigate("IndexS", { mensaje: 'matutino' });
+              saveData("turno", "matutino");
+              AsignarTurno("matutino");
             }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
           </Button>
           <Button title={<Text style={styles.textStyle} >{"Vespertino"}</Text>}
             onPress={() => {
-              navigation.navigate("IndexS", { mensaje: 'Vespertino' });
-              saveData("turno", "Vespertino");
-              AsignarTurno("Vespertino");
+              navigation.navigate("IndexS", { mensaje: 'vespertino' });
+              saveData("turno", "vespertino");
+              AsignarTurno("vespertino");
 
             }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
           </Button>
           <Button title={<Text style={styles.textStyle} >{"Nocturno"}</Text>}
             onPress={() => {
-              navigation.navigate("IndexS", { mensaje: 'Nocturno' });
-              saveData("turno", "Nocturno");
-              AsignarTurno("Nocturno");
+              navigation.navigate("IndexS", { mensaje: 'nocturno' });
+              saveData("turno", "nocturno");
+              AsignarTurno("nocturno");
             }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
           </Button>
 

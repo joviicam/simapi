@@ -4,13 +4,17 @@ import Camillas from '../components/common/Camillas';
 import ExitBtn from '../components/account/ExitBtn';
 import { getData, saveData } from '../utils/Storage';
 import { path } from '../data';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../components/common/Loading';
 import { Button } from 'react-native-elements';
 import { Input } from 'react-native-elements'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import colors from '../utils/colors';
+import { io } from "socket.io-client";
+import * as Notifications from 'expo-notifications';
+
+
 
 export default function IndexScreen() {
   const route = useRoute();
@@ -42,6 +46,39 @@ export default function IndexScreen() {
       }
     });
   };
+
+  const handleMessage = (message) => {
+    console.log('Mensaje recibido:', message);
+    // webViewRef.current.postMessage(JSON.stringify({ type: 'record_updated', message })); // Línea eliminada
+    getCamillasEnfermera().then((camillas) => {
+      setCamillas(camillas.data);
+      console.log("Camillas Enfermera actualizadas: ");
+      setFilteredCamillas(camillas.data);
+      console.log(camillas.data);
+      setMensaje(message);
+    }).catch((error) => {
+      console.log(error);
+    });
+  };
+
+
+  useEffect(() => {
+    const socket = io('http://192.168.1.83:3000');
+
+    socket.on('connect', () => {
+      console.log('Cliente conectado');
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Cliente desconectado');
+    });
+
+    socket.on('record_updated', handleMessage);
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     getCamillasEnfermera().then((camillas) => {

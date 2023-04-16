@@ -7,9 +7,12 @@ import CamillaShow from './CamillaShow'
 import Toast from 'react-native-toast-message';
 import { path } from '../../data'
 import { getData } from '../../utils/Storage'
+import { useNavigation } from '@react-navigation/native';
 
 export default function Alarma(props) {
-    const { navigation } = props;
+
+    const navigation = useNavigation();
+
     console.log("Alarma")
     const { camilla, sala, paciente, expediente, alarma } = props;
     console.log({ camilla: camilla, sala: sala, paciente: paciente, expediente: expediente, alarma: alarma })
@@ -54,6 +57,7 @@ export default function Alarma(props) {
         });
         const json = await response.json();
         console.log(json);
+        navigation.navigate('AlarmaS', { camilla: camilla, sala: sala, paciente: paciente, expediente: expediente, isla: isla, alarma: false })
         // cambiar el valor de la alarma en el route
         props.navigation.navigate('AlarmaS', { camilla: camilla, sala: sala, paciente: paciente, expediente: expediente, isla: isla, alarma: false })
     }

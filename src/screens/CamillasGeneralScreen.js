@@ -8,6 +8,7 @@ import Loading from '../components/common/Loading'
 import ExitBtn from '../components/account/ExitBtn'
 import { getData } from '../utils/Storage'
 import { Input } from 'react-native-elements'
+import { io } from "socket.io-client";
 
 export default function CamillasGeneralScreen(props) {
 
@@ -36,6 +37,37 @@ export default function CamillasGeneralScreen(props) {
             }
         });
     };
+
+    const handleMessage = (message) => {
+        console.log('Mensaje recibido:', message);
+        // webViewRef.current.postMessage(JSON.stringify({ type: 'record_updated', message })); // Línea eliminada
+        getCamillasEnfermera().then((camillas) => {
+            setCamillas(camillas.data);
+            console.log("Camillas Enfermera actualizadas: ");
+            setFilteredCamillas(camillas.data);
+            console.log(camillas.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+    };
+
+    useEffect(() => {
+        const socket = io('http://192.168.1.83:3000');
+
+        socket.on('connect', () => {
+            console.log('Cliente conectado');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Cliente desconectado');
+        });
+
+        socket.on('record_updated', handleMessage);
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
     useEffect(() => {
         getCamillasEnfermera().then((camillas) => {
