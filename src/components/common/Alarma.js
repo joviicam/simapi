@@ -54,6 +54,7 @@ export default function Alarma(props) {
         });
         const json = await response.json();
         console.log(json);
+        navigation.navigate('AlarmaS', { camilla: camilla, sala: sala, paciente: paciente, expediente: expediente, isla: isla, alarma: false })
         // cambiar el valor de la alarma en el route
         props.navigation.navigate('AlarmaS', { camilla: camilla, sala: sala, paciente: paciente, expediente: expediente, isla: isla, alarma: false })
     }
