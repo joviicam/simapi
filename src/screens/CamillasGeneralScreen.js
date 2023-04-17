@@ -15,9 +15,6 @@ import { io } from "socket.io-client";
 
 export default function CamillasGeneralScreen(props) {
     const route = useRoute();
-    const password = route.params.password;
-    console.log("PasswordGeneral: " + password);
-
     const [camillas, setCamillas] = useState([]);
     const [filteredCamillas, setFilteredCamillas] = useState([]);
 
@@ -115,7 +112,7 @@ export default function CamillasGeneralScreen(props) {
                 <View style={styles.AccountBtnContainer}>
                     <AccountBtn
                         onPress={() => {
-                            navigation.navigate('ContrasenaS', { password: password })
+                            navigation.navigate('ContrasenaS')
                         }}
                     />
                 </View>

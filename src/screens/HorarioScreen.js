@@ -14,9 +14,7 @@ import AccountBtn from '../components/account/AccountBtn';
 import { useRoute } from '@react-navigation/native';
 export default function HorarioScreen(props) {
   const route = useRoute();
-  const password= route.params.password; //FER AQUI RECIBES EL TURNO
   const { navigation } = props;
-  console.log("Password2: " + password);
   const [token, setToken] = useState(null);
   const getToken = async () => {
     const token = await getData('token');
@@ -174,7 +172,7 @@ export default function HorarioScreen(props) {
       <View style={styles.AccountBtnContainer}>
         <AccountBtn
           onPress={() => {
-            navigation.navigate('ContrasenaS', { password: password })
+            navigation.navigate('ContrasenaS')
           }}
         />
       </View>

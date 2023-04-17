@@ -22,17 +22,26 @@ import * as Notifications from 'expo-notifications';
 export default function IndexScreen() {
   const route = useRoute();
   const navigation = useNavigation();
-  const turno = route.params.mensaje; //FER AQUI RECIBES EL TURNO
-  const password = route.params.password;
-  console.log("Password: " + password);
-  console.log("Horario: " + turno);
+
   const [camillas, setCamillas] = useState([]);
   const [filteredCamillas, setFilteredCamillas] = useState([]);
+  const [tokenNotification, setTokenNotification] = useState('');
+
+  useEffect(() => {
+    const getNotificationToken = async () => {
+      const tokenNotification = await getData('tokenNotification');
+      setTokenNotification(tokenNotification);
+    }
+    getNotificationToken();
+  }, []);
+
+  console.log("TokenN: " + tokenNotification)
 
   const getCamillasEnfermera = () => {
     return new Promise(async (resolve, reject) => {
       try {
         const enfermera = await getData('idUsuario');
+        const turno = await getData('turno');
         const url = path + 'api/camillas/enfermera/' + enfermera + '/turno/' + turno;
         console.log("URL: " + url)
         const token = await getData('token');
@@ -53,18 +62,61 @@ export default function IndexScreen() {
   };
 
   const handleMessage = (message) => {
-    console.log('Mensaje recibido:', message);
-    // webViewRef.current.postMessage(JSON.stringify({ type: 'record_updated', message })); // Línea eliminada
-    getCamillasEnfermera().then((camillas) => {
-      setCamillas(camillas.data);
-      console.log("Camillas Enfermera actualizadas: ");
-      setFilteredCamillas(camillas.data);
-      console.log(camillas.data);
-      setMensaje(message);
-    }).catch((error) => {
-      console.log(error);
+    return new Promise(async (resolve, reject) => {
+      console.log('Mensaje recibido:', message);
+
+      let mensjaAntes = message.split("@")[0];
+      let mensjaDespues = message.split("@")[1];
+
+      console.log("Mensaje antes del @: " + mensjaAntes);
+      console.log("Mensaje despues del @: " + mensjaDespues);
+
+      try {
+        const camillas = await getCamillasEnfermera();
+        setCamillas(camillas.data);
+        console.log("Camillas Enfermera actualizadas: ");
+        setFilteredCamillas(camillas.data);
+
+        if (mensjaDespues != undefined) {
+          for (let i = 0; i < camillas.data.length; i++) {
+            if (camillas.data[i].numeroExpediente == mensjaDespues) {
+              console.log("Expediente encontrado: " + camillas.data[i].numeroExpediente);
+              const tkn = await getData('tokenNotification');
+              const message = {
+                to: tkn,
+                sound: 'default',
+                title: 'Camilla ' + camillas.data[i].numeroCamilla,
+                body: mensjaAntes,
+                data: { data: 'goes here' },
+                _displayInForeground: true,
+              };
+              console.log("Mensaje: " + message);
+
+              const response = await fetch('https://exp.host/--/api/v2/push/send', {
+                method: 'POST',
+                headers: {
+                  Accept: 'application/json',
+                  'Accept-encoding': 'gzip, deflate',
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(message),
+              });
+
+              const responseData = await response.json();
+              console.log(responseData);
+              resolve(responseData);
+            }
+          }
+        } else {
+          resolve(null);
+        }
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
     });
   };
+
 
 
   useEffect(() => {
@@ -96,6 +148,8 @@ export default function IndexScreen() {
     });
   }, []);
 
+
+
   const searchFilterFunction = (text) => {
     if (text) {
       const newData = camillas.filter(item => {
@@ -124,7 +178,7 @@ export default function IndexScreen() {
         <View style={styles.AccountBtnContainer}>
           <AccountBtn
             onPress={() => {
-              navigation.navigate('ContrasenaS', { password: password })
+              navigation.navigate('ContrasenaS')
             }}
           />
         </View>
@@ -148,14 +202,14 @@ export default function IndexScreen() {
           </Input>
         </View>
         <Button onPress={() => {
-          navigation.navigate('CamillasGeneralS', { password: password })
+          navigation.navigate('CamillasGeneralS')
         }} title={'Camillas general'} buttonStyle={styles.btn1}></Button>
         {filteredCamillas ? filteredCamillas.map((camilla) => {
           return (
             <Camillas camilla={camilla.idCamillas} sala={camilla.idSala} isla={camilla.idIsla} paciente={camilla.nombre} expediente={camilla.numeroExpediente} estadoAlarma={camilla.estadoAlarma}
               key={camilla.idCamillas}
               onPress={() => {
-                navigation.navigate('AlarmaS', { camilla: camilla.idCamillas, sala: camilla.idSala, paciente: camilla.nombre, expediente: camilla.numeroExpediente, isla: camilla.idIsla, alarma: camilla.estadoAlarma, password: password })
+                navigation.navigate('AlarmaS', { camilla: camilla.idCamillas, sala: camilla.idSala, paciente: camilla.nombre, expediente: camilla.numeroExpediente, isla: camilla.idIsla, alarma: camilla.estadoAlarma })
                 saveData('alarma', camilla.estadoAlarma);
                 console.log({ camilla: camilla.idCamillas, sala: camilla.idSala, isla: camilla.idIsla, paciente: camilla.nombre, expediente: camilla.numeroExpediente, isla: camilla.idIsla });
               }}

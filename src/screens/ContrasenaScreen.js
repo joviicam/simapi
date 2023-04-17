@@ -17,7 +17,17 @@ import { useRoute } from '@react-navigation/native';
 
 export default function ContrasenaScreen(props) {
     const route = useRoute();
-    const password = route.params.password;
+
+    const [password, setPassword] = useState(''); // Guardar la contraseña de la enfermera
+
+    useEffect(() => {
+        // traer la contraseña de la enfermera del async storage
+        const getPassword = async () => {
+            const password = await getData('password');
+            setPassword(password);
+        }
+        getPassword();
+    }, []);
 
     //guardar datos de la enfermera
     const [nombre, setNombre] = useState('');
@@ -71,76 +81,76 @@ export default function ContrasenaScreen(props) {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    
+
     const handleChangePassword = () => {
         if (newPassword !== confirmPassword) {
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: "Las contraseñas no coinciden",
-          });
-        } else if (newPassword === "" || confirmPassword === "") { // Corregido este condicional
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: "No puedes dejar campos vacíos",
-          });
-        } else {
-          return new Promise(async (resolve, reject) => {
-            try {
-              const enfermera = await getData('idUsuario');
-              const url = path + 'api/usuarios/' + enfermera;
-              console.log("URL: " + url)
-              const token = await getData('token');
-              setToken(token);
-              console.log("Token: " + token);
-      
-              const response = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': 'Bearer ' + token
-                },
-                body: JSON.stringify({
-                  nombre: nombre,
-                  apellidos: apellidos,
-                  correo: correo,
-                  password: confirmPassword,
-                  rol: rol,
-                  idInstitucion: idInstitucion // Usar el valor obtenido de localStorage
-                }),
-              });
-              const json = await response.json();
-              resolve(json);
-              removeData("token");
-              removeData("nombre");
-              removeData("apellidos");
-              removeData("correo");
-              removeData("idUsuario");
-              removeData("idInstitucion");
-              removeData("rol");
-              removeData("colorPrimario");
-              removeData("colorSecundario");
-              removeData("colorTerciario");
-              Toast.show({
-                type: "success",
-                position: "bottom",
-                text1: "Contraseña cambiada correctamente, Inicia sesión de nuevo por favor",
-              });
-              navigation.navigate('LoginS');
-            } catch (error) {
-              console.log(error);
-              Toast.show({
+            Toast.show({
                 type: "error",
                 position: "bottom",
-                text1: "Error al cambiar la contraseña",
-              });
-              reject(error);
-            }
-          });
+                text1: "Las contraseñas no coinciden",
+            });
+        } else if (newPassword === "" || confirmPassword === "") { // Corregido este condicional
+            Toast.show({
+                type: "error",
+                position: "bottom",
+                text1: "No puedes dejar campos vacíos",
+            });
+        } else {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const enfermera = await getData('idUsuario');
+                    const url = path + 'api/usuarios/' + enfermera;
+                    console.log("URL: " + url)
+                    const token = await getData('token');
+                    setToken(token);
+                    console.log("Token: " + token);
+
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: JSON.stringify({
+                            nombre: nombre,
+                            apellidos: apellidos,
+                            correo: correo,
+                            password: confirmPassword,
+                            rol: rol,
+                            idInstitucion: idInstitucion // Usar el valor obtenido de localStorage
+                        }),
+                    });
+                    const json = await response.json();
+                    resolve(json);
+                    removeData("token");
+                    removeData("nombre");
+                    removeData("apellidos");
+                    removeData("correo");
+                    removeData("idUsuario");
+                    removeData("idInstitucion");
+                    removeData("rol");
+                    removeData("colorPrimario");
+                    removeData("colorSecundario");
+                    removeData("colorTerciario");
+                    Toast.show({
+                        type: "success",
+                        position: "bottom",
+                        text1: "Contraseña cambiada correctamente, Inicia sesión de nuevo por favor",
+                    });
+                    navigation.navigate('LoginS');
+                } catch (error) {
+                    console.log(error);
+                    Toast.show({
+                        type: "error",
+                        position: "bottom",
+                        text1: "Error al cambiar la contraseña",
+                    });
+                    reject(error);
+                }
+            });
         }
-      }
-      
+    }
+
 
     const selectedComponent = (key) => {
         if (key === "pasword") {

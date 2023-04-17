@@ -78,7 +78,8 @@ export default function LoginForm({ navigation }) {
             //Saca el password del usuario            
             //Espera 1 segundo para que se guarde el password y lo envia a la siguiente pantalla
             setTimeout(() => {
-              navigator.replace("HorarioS",{ password: pass});
+              saveData("password", formData.password);
+              navigator.replace("HorarioS");
             }, 2000);
           } else {
             Toast.show({

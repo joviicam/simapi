@@ -7,31 +7,48 @@ import CamillaShow from './CamillaShow'
 import Toast from 'react-native-toast-message';
 import { path } from '../../data'
 import { getData } from '../../utils/Storage'
+import { useEffect } from 'react'
+import { useNavigation, useRoute, StackActions } from "@react-navigation/native";
+
+
 
 export default function Alarma(props) {
-    const { navigation } = props;
-    console.log("Alarma")
-    const { camilla, sala, paciente, expediente, alarma } = props;
-    console.log({ camilla: camilla, sala: sala, paciente: paciente, expediente: expediente, alarma: alarma })
+    console.log("Alarma");
+    const { camilla, sala, paciente, expediente, alarma, mensaje } = props;
+    console.log("Mensaje: " + mensaje)
+    console.log({ camilla: camilla, sala: sala, paciente: paciente, expediente: expediente, alarma: alarma });
+
+    const navigation = useNavigation();
+
+    console.log("Nav: " + navigation);
 
     const [token, setToken] = useState(null);
+    const [idUsuario, setIdUsuario] = useState(null);
 
-    const getToken = async () => {
-        const token = await getData('token');
-        setToken(token);
-    }
+    useEffect(() => {
+        const getToken = async () => {
+            const token = await getData('token');
+            setToken(token);
+        };
 
+        getToken();
+    }, []);
 
-    getToken();
+    useEffect(() => {
+        const getIdUsuario = async () => {
+            const idUsuario = await getData('idUsuario');
+            setIdUsuario(idUsuario);
+        };
+
+        getIdUsuario();
+    }, []);
+
 
     console.log("Token: " + token);
 
-
-    //useState sirve para indicar el estado inicial del icono
     const [isLiked, setIsLiked] = useState(alarma);
-    //Sirve para cambiar el color del icono
     const iconColor = isLiked ? 'red' : 'gray';
-    //Función para cambiar el estado del icono al presionarlo
+
     const onPressIcon = async () => {
         setIsLiked(!isLiked);
         console.log("La alarma se encuentra encendida");
@@ -40,24 +57,47 @@ export default function Alarma(props) {
             position: "bottom",
             text1: "La alarma se apagó correctamente",
         });
-        const url = path + 'api/camillas/alarma/' + camilla;
-        console.log("URL: " + url)
-        const response = await fetch(url, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token
-            },
-            body: JSON.stringify({
-                estadoAlarma: false
+
+        const putRequest = async () => {
+            const url = path + 'api/alarma/deactivate/camilla/' + camilla + '/enfermera/' + idUsuario;
+            console.log("URL: " + url);
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const json = await response.json();
+                    console.log(json);
+                    navigation.navigate('IndexS');
+                    return Promise.resolve();
+                } else {
+                    throw new Error('Error en la petición');
+                }
+            } catch (error) {
+                console.log(error);
+                Toast.show({
+                    type: "error",
+                    position: "bottom",
+                    text1: "Error en la petición",
+                });
+                return Promise.reject();
+            }
+        };
+
+        putRequest()
+            .then(() => {
+                console.log('Petición exitosa');
+                navigation.navigate('IndexS');
             })
-        });
-        const json = await response.json();
-        console.log(json);
-        navigation.navigate('AlarmaS', { camilla: camilla, sala: sala, paciente: paciente, expediente: expediente, isla: isla, alarma: false })
-        // cambiar el valor de la alarma en el route
-        props.navigation.navigate('AlarmaS', { camilla: camilla, sala: sala, paciente: paciente, expediente: expediente, isla: isla, alarma: false })
-    }
+            .catch(() => {
+                console.log('Error en la petición');
+            });
+    };
 
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -73,7 +113,8 @@ export default function Alarma(props) {
                 text1: "La alarma se encuentra apagada",
             });
         }
-    }
+    };
+
     return (
         <View style={styles.container} >
             <CamillaShow style={styles.CamillaContainer}
