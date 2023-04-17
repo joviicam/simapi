@@ -73,7 +73,7 @@ export default function App() {
   `;
 
   useEffect(() => {
-    const socket = io('http://192.168.1.83:3000');
+    const socket = io('http://54.198.174.61:3000');
 
     socket.on('connect', () => {
       console.log('Cliente conectado');

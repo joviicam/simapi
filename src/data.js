@@ -1,2 +1,2 @@
 // exporta una variable con un saludo
-export const path = "http://192.168.1.83:8080/";
+export const path = "http://54.198.174.61:8080/";
