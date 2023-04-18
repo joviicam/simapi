@@ -11,7 +11,7 @@ export default function AccountBtn(props) {
   return (
     <View>
       <Button buttonStyle={styles.btn}
-        icon={<Icon type="material-community" name="account" iconStyle={styles.Icon} size={50} />}
+        icon={<Icon type="material-community" color={"white"} name="account" iconStyle={styles.Icon} size={50} />}
         onPress={onPress}>
       </Button>
     </View>

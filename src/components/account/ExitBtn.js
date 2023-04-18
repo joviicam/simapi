@@ -13,7 +13,7 @@ export default function ExitBtn(props) {
   return (
     <View>
       <Button buttonStyle={styles.btn}
-        icon={<Icon type="material-community" name="logout" iconStyle={styles.Icon} size={40} />}
+        icon={<Icon type="material-community" color={"#FFF"} name="logout" iconStyle={styles.Icon} size={40} />}
         onPress={() => {     
           removeData("token");
           removeData("nombre");
@@ -40,12 +40,13 @@ export default function ExitBtn(props) {
 const styles = StyleSheet.create({
   btn: {
     //boton color rojo
-    backgroundColor: "#8B0000",
+    backgroundColor: "red",
     borderRadius: 10,
     width: 50,
     height: 60,
   },
   Icon: {
-    color: "#fff",
+    color: "#FFFFFF",
+    backgroundColor: "#FFFFFF",
   }
 })

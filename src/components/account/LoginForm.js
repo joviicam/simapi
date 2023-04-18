@@ -124,6 +124,7 @@ export default function LoginForm({ navigation }) {
               <Input
                 placeholder="Correo Electrónico"
                 containerStyle={styles.input}
+                inputStyle={{ color: 'white' }}
                 rightIcon={
                   <Icon
                     type="material-community"
@@ -141,6 +142,7 @@ export default function LoginForm({ navigation }) {
                 placeholder="Contraseña"
                 containerStyle={styles.input}
                 password={true}
+                inputStyle={{ color: 'white' }}
                 secureTextEntry={showPassword ? false : true}
                 rightIcon={
                   <Icon

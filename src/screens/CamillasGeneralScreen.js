@@ -55,7 +55,7 @@ export default function CamillasGeneralScreen(props) {
     };
 
     useEffect(() => {
-        const socket = io('http://'+pathSocket);
+        const socket = io('http://' + pathSocket);
 
         socket.on('connect', () => {
             console.log('Cliente conectado');
@@ -137,16 +137,20 @@ export default function CamillasGeneralScreen(props) {
                     </Input>
                 </View>
                 {filteredCamillas ? filteredCamillas.map((camilla) => {
-                    return (
-                        <Camillas camilla={camilla.idCamillas} sala={camilla.idSala} isla={camilla.idIsla} paciente={camilla.nombre} expediente={camilla.numeroExpediente} estadoAlarma={camilla.estadoAlarma}
-                            key={camilla.idCamillas}
-                            onPress={() => {
-                                navigation.navigate('AlarmaS', { camilla: camilla.idCamillas, sala: camilla.idSala, paciente: camilla.nombre, expediente: camilla.numeroExpediente, isla: camilla.idIsla, alarma: camilla.estadoAlarma })
-                                //saveData('alarma', camilla.estadoAlarma);
-                                console.log({ camilla: camilla.idCamillas, sala: camilla.idSala, isla: camilla.idIsla, paciente: camilla.nombre, expediente: camilla.numeroExpediente, isla: camilla.idIsla });
-                            }}
-                        />
-                    )
+                    if (camilla.nombre) {
+                        return (
+                            <Camillas camilla={camilla.idCamillas} sala={camilla.idSala} isla={camilla.idIsla} paciente={camilla.nombre} expediente={camilla.numeroExpediente} estadoAlarma={camilla.estadoAlarma}
+                                key={camilla.idCamillas}
+                                onPress={() => {
+                                    navigation.navigate('AlarmaS', { camilla: camilla.idCamillas, sala: camilla.idSala, paciente: camilla.nombre, expediente: camilla.numeroExpediente, isla: camilla.idIsla, alarma: camilla.estadoAlarma })
+                                    //saveData('alarma', camilla.estadoAlarma);
+                                    console.log({ camilla: camilla.idCamillas, sala: camilla.idSala, isla: camilla.idIsla, paciente: camilla.nombre, expediente: camilla.numeroExpediente, isla: camilla.idIsla });
+                                }}
+                            />
+                        )
+                    } else {
+                        null
+                    }
                 }) : (
                     <View>
                         <Loading isVisible={true} text="Cargando camillas" />
