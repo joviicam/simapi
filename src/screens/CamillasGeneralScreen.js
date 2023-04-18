@@ -3,7 +3,7 @@ import React from 'react'
 import { ScrollView } from 'react-native-gesture-handler'
 import { useEffect, useState } from 'react'
 import Camillas from '../components/common/Camillas'
-import { path } from '../data'
+import { path, pathSocket } from '../data'
 import Loading from '../components/common/Loading'
 import ExitBtn from '../components/account/ExitBtn'
 import { getData } from '../utils/Storage'
@@ -55,7 +55,7 @@ export default function CamillasGeneralScreen(props) {
     };
 
     useEffect(() => {
-        const socket = io('http://54.198.174.61:3000');
+        const socket = io('http://'+pathSocket);
 
         socket.on('connect', () => {
             console.log('Cliente conectado');

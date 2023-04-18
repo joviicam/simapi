@@ -14,6 +14,7 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { pathSocket } from './src/data';
 
 LogBox.ignoreAllLogs(); // sirve para quitar los warnings
 
@@ -73,7 +74,7 @@ export default function App() {
   `;
 
   useEffect(() => {
-    const socket = io('http://54.198.174.61:3000');
+    const socket = io('http://'+pathSocket);
 
     socket.on('connect', () => {
       console.log('Cliente conectado');

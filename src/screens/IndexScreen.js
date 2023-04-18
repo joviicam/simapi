@@ -3,7 +3,7 @@ import React from 'react'
 import Camillas from '../components/common/Camillas';
 import ExitBtn from '../components/account/ExitBtn';
 import { getData, saveData } from '../utils/Storage';
-import { path } from '../data';
+import { path, pathSocket } from '../data';
 import { useState, useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../components/common/Loading';
@@ -85,7 +85,7 @@ export default function IndexScreen() {
               const message = {
                 to: tkn,
                 sound: 'default',
-                title: 'Camilla ' + camillas.data[i].numeroCamilla,
+                title: 'Camilla: '+camillas.data[i].numeroExpediente + ' encedida',
                 body: mensjaAntes,
                 data: { data: 'goes here' },
                 _displayInForeground: true,
@@ -120,7 +120,7 @@ export default function IndexScreen() {
 
 
   useEffect(() => {
-    const socket = io('http://54.198.174.61:3000');
+    const socket = io('http://' + pathSocket);
 
     socket.on('connect', () => {
       console.log('Cliente conectado');
