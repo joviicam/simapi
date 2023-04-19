@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import colors from '../utils/colors'
+import {getColors} from '../utils/colors'
 import { Button } from 'react-native-elements'
 import ExitBtn from '../components/account/ExitBtn';
 import { getData, removeData, saveData } from '../utils/Storage';
@@ -16,10 +16,27 @@ export default function HorarioScreen(props) {
   const route = useRoute();
   const { navigation } = props;
   const [token, setToken] = useState(null);
+  
+
   const getToken = async () => {
     const token = await getData('token');
     setToken(token);
   }
+
+  const [colors, setColors] = useState({});
+  useEffect(() => {
+    async function fetchColors() {
+      const retrievedColors = {
+        C_PRIMARIO: await AsyncStorage.getItem('colorPrimario'),
+        C_SECUNDARIO: await AsyncStorage.getItem('colorSecundario'),
+        C_TERCERARIO: await AsyncStorage.getItem('colorTercerario'),
+      }
+      console.log({retrievedColors: retrievedColors})
+      setColors(retrievedColors);
+    }
+
+    fetchColors();
+  }, []);
 
   getToken();
 
@@ -74,7 +91,7 @@ export default function HorarioScreen(props) {
           <Button title={<Text style={styles.textStyle}>{"7:00 - 15:00"} {'\n'} {"7:00 - 15:00"}</Text>}
             onPress={() => {
               navigation.navigate("IndexS");
-            }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
+            }} containerStyle={styles.ContainerBtn} buttonStyle={{...styles.btn, backgroundColor: colors.C_PRIMARIO,}}>
           </Button>
         </View>
       )
@@ -93,7 +110,7 @@ export default function HorarioScreen(props) {
           <Button title={<Text style={styles.textStyle}>{"15:00 - 23:00"} {'\n'} {"15:00 - 23:00"}</Text>}
             onPress={() => {
               navigation.navigate("IndexS");
-            }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
+            }} containerStyle={styles.ContainerBtn} buttonStyle={{...styles.btn, backgroundColor: colors.C_PRIMARIO,}}>
           </Button>
         </View>
       )
@@ -121,7 +138,7 @@ export default function HorarioScreen(props) {
           <Button title={<Text style={styles.textStyle}>{"23:00 - 7:00"} {'\n'} {"23:00 - 7:00"}</Text>}
             onPress={() => {
               navigation.navigate("IndexS");
-            }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
+            }} containerStyle={styles.ContainerBtn} buttonStyle={{...styles.btn, backgroundColor: colors.C_PRIMARIO,}}>
           </Button>
         </View>
       )
@@ -143,7 +160,7 @@ export default function HorarioScreen(props) {
               navigation.navigate("IndexS", { mensaje: 'matutino' });
               saveData("turno", "matutino");
               AsignarTurno("matutino");
-            }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
+            }} containerStyle={styles.ContainerBtn} buttonStyle={{...styles.btn, backgroundColor: colors.C_PRIMARIO,}}>
           </Button>
           <Button title={<Text style={styles.textStyle} >{"Vespertino"}</Text>}
             onPress={() => {
@@ -151,14 +168,14 @@ export default function HorarioScreen(props) {
               saveData("turno", "vespertino");
               AsignarTurno("vespertino");
 
-            }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
+            }} containerStyle={styles.ContainerBtn} buttonStyle={{...styles.btn, backgroundColor: colors.C_PRIMARIO,}}>
           </Button>
           <Button title={<Text style={styles.textStyle} >{"Nocturno"}</Text>}
             onPress={() => {
               navigation.navigate("IndexS", { mensaje: 'nocturno' });
               saveData("turno", "nocturno");
               AsignarTurno("nocturno");
-            }} containerStyle={styles.ContainerBtn} buttonStyle={styles.btn}>
+            }} containerStyle={styles.ContainerBtn} buttonStyle={{...styles.btn, backgroundColor: colors.C_PRIMARIO,}}>
           </Button>
 
         </View>
@@ -221,7 +238,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   btn: {
-    backgroundColor: colors.C_PRIMARIO,
     borderRadius: 10,
     marginBottom: 50,
     height: 100,

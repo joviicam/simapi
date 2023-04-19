@@ -5,7 +5,6 @@ import { useFormik } from "formik"
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
-import colors from "../../utils/colors";
 import { useNavigation } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import BtnPrimary from "../common/BtnPrimary";
@@ -70,6 +69,7 @@ export default function LoginForm({ navigation }) {
             saveData("colorPrimario", result.data.colores.colorPrimario);
             saveData("colorSecundario", result.data.colores.colorSecundario);
             saveData("colorTerciario", result.data.colores.colorTerciario);
+            //setColors(result.data.colores.colorPrimario, result.data.colores.colorSecundario, result.data.colores.colorTerciario)
             Toast.show({
               type: "success",
               position: "top",
@@ -96,7 +96,7 @@ export default function LoginForm({ navigation }) {
           });
         }
       } catch (error) {
-        console.log(error);
+        console.log({errrrrrrrrrrrrrrrrrrrrrrrrorrrrrrrrrrrrrrrrrrr: error});
         Toast.show({
           type: "error",
           position: "bottom",
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignContent: "center",
     alignItems: "center",
-    backgroundColor: colors.C_TERCIARIO,
+    backgroundColor: "#00264D",
     zIndex: 1,
   },
   IconStyle: {
@@ -220,14 +220,14 @@ const styles = StyleSheet.create({
     width: "85%",
     height: 60,
     marginTop: 20,
-    backgroundColor: colors.C_PRIMARIO,
+    backgroundColor: "#385273",
     alignSelf: "center",
     padding: 4,
   },
   viewForm: {
     paddingTop: 50,
     marginTop: 50,
-    backgroundColor: colors.C_SECUNDARIO,
+    backgroundColor: "#A3B2CF",
     width: "90%",
     height: "65%",
     borderRadius: 20,
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   inputStyle: {
     width: "100%",
     marginTop: 20,
-    backgroundColor: colors.C_PRIMARIO,
+    backgroundColor: "#385273",
   },
   Icon: {
     color: "#c1c1c1",
@@ -245,5 +245,6 @@ const styles = StyleSheet.create({
   },
   BtnPrimaryS: {
     alignSelf: "center",
+    backgroundColor: "#385273",
   },
 });

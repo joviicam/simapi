@@ -3,8 +3,23 @@ import React from 'react'
 import { Button } from 'react-native-elements'
 import colors from '../../utils/colors';
 import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Camillas(props) {
+    const [colors, setColors] = useState({});
+  useEffect(() => {
+    async function fetchColors() {
+      const retrievedColors = {
+        C_PRIMARIO: await AsyncStorage.getItem('colorPrimario'),
+        C_SECUNDARIO: await AsyncStorage.getItem('colorSecundario'),
+        C_TERCERARIO: await AsyncStorage.getItem('colorTercerario'),
+      }
+      console.log({retrievedColors: retrievedColors})
+      setColors(retrievedColors);
+    }
+
+    fetchColors();
+  }, []);
     const { onPress, sala, paciente, expediente, alarma, isla, estadoAlarma } = props;
 
     const [isChangingColor, setIsChangingColor] = useState(estadoAlarma);

@@ -20,6 +20,20 @@ import * as Notifications from 'expo-notifications';
 
 
 export default function IndexScreen() {
+  const [colors, setColors] = useState({});
+  useEffect(() => {
+    async function fetchColors() {
+      const retrievedColors = {
+        C_PRIMARIO: await AsyncStorage.getItem('colorPrimario'),
+        C_SECUNDARIO: await AsyncStorage.getItem('colorSecundario'),
+        C_TERCERARIO: await AsyncStorage.getItem('colorTercerario'),
+      }
+      console.log({retrievedColors: retrievedColors})
+      setColors(retrievedColors);
+    }
+
+    fetchColors();
+  }, []);
   const route = useRoute();
   const navigation = useNavigation();
 
@@ -203,7 +217,7 @@ export default function IndexScreen() {
         </View>
         <Button onPress={() => {
           navigation.navigate('CamillasGeneralS')
-        }} title={'Camillas general'} buttonStyle={styles.btn1}></Button>
+        }} title={'Camillas general'} buttonStyle={{...styles.btn1, backgroundColor: colors.C_PRIMARIO}}></Button>
         {filteredCamillas ? filteredCamillas.map((camilla) => {
           return (
             <Camillas camilla={camilla.idCamillas} sala={camilla.idSala} isla={camilla.idIsla} paciente={camilla.nombre} expediente={camilla.numeroExpediente} estadoAlarma={camilla.estadoAlarma}
@@ -277,7 +291,6 @@ const styles = StyleSheet.create({
     width: 300,
     height: 60,
     borderRadius: 10,
-    backgroundColor: colors.C_PRIMARIO,
   },
   AccountBtnContainer: {
     position: "absolute",

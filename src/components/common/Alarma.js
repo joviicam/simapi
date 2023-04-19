@@ -9,10 +9,25 @@ import { path } from '../../data'
 import { getData } from '../../utils/Storage'
 import { useEffect } from 'react'
 import { useNavigation, useRoute, StackActions } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
 
 export default function Alarma(props) {
+    const [colors, setColors] = useState({});
+  useEffect(() => {
+    async function fetchColors() {
+      const retrievedColors = {
+        C_PRIMARIO: await AsyncStorage.getItem('colorPrimario'),
+        C_SECUNDARIO: await AsyncStorage.getItem('colorSecundario'),
+        C_TERCERARIO: await AsyncStorage.getItem('colorTercerario'),
+      }
+      console.log({retrievedColors: retrievedColors})
+      setColors(retrievedColors);
+    }
+
+    fetchColors();
+  }, []);
     console.log("Alarma");
     const { camilla, sala, paciente, expediente, alarma, mensaje } = props;
     console.log("Mensaje: " + mensaje)
@@ -116,7 +131,7 @@ export default function Alarma(props) {
     };
 
     return (
-        <View style={styles.container} >
+        <View style={{...styles.container, backgroundColor: colors.C_SECUNDARIO,}} >
             <CamillaShow style={styles.CamillaContainer}
                 camilla={camilla} paciente={paciente} sala={sala} expediente={expediente} />
             <TouchableOpacity onPress={handlePress}>
@@ -127,23 +142,23 @@ export default function Alarma(props) {
                         }} size={250} color="white" />
                 </View>
             </TouchableOpacity>
-            <Text style={styles.title}>Presiona el botón rojo {"\n"}para apagar la alarma</Text>
+            <Text style={{...styles.title, color: colors.C_TERCIARIO}}>Presiona el botón rojo {"\n"}para apagar la alarma</Text>
             <Modal
                 visible={modalVisible}
                 animationType="slide"
-                transparent={true}//Para que el modal sea transparente
+                transparent={true}//Para que el modal sea transparente 
                 onRequestClose={() => setModalVisible(false)}
             >
                 <View style={styles.Modal}>
                     <Image
                         source={require('../../../assets/images/Advertencia.png')} style={styles.iconModal}
                     />
-                    <Text style={styles.title}>¿Desea apagar la alarma?</Text>
+                    <Text style={{...styles.title, color: colors.C_TERCIARIO}}>¿Desea apagar la alarma?</Text>
                     <View style={styles.buttonContainer}>
                         <Button title="Cancelar" buttonStyle={styles.btnCancelar} onPress={() => {
                             setModalVisible(false)
                         }} />
-                        <Button title="Aceptar" buttonStyle={styles.btnAceptar} onPress={() => {
+                        <Button title="Aceptar" buttonStyle={{...styles.btnAceptar, backgroundColor: colors.C_PRIMARIO}} onPress={() => {
                             onPressIcon();
                             setModalVisible(false)
                         }} />
@@ -163,7 +178,7 @@ const styles = StyleSheet.create({
         paddingBottom: 100,
         height: 80,
         width: "90%",
-        backgroundColor: colors.C_SECUNDARIO,
+        
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -171,7 +186,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontSize: 23,
         fontWeight: 'bold',
-        color: colors.C_TERCIARIO,
+        
         textAlign: 'center',
         fontStyle: "italic"
     },
@@ -222,7 +237,7 @@ const styles = StyleSheet.create({
         paddingLeft: 10
     },
     btnAceptar: {
-        backgroundColor: colors.C_PRIMARIO,
+        
         marginTop: 20,
         width: 100,
         height: 50,

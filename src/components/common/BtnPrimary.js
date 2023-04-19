@@ -1,14 +1,32 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import { Button } from 'react-native-elements'
-import colors from '../../utils/colors'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function BtnPrimary(props) {
+  //sacar el backGroundColor del style de props
+  const { style: { backgroundColor } } = props;
+  const color = backgroundColor;
+
+    const [colors, setColors] = useState({});
+  useEffect(() => {
+    async function fetchColors() {
+      const retrievedColors = {
+        C_PRIMARIO: await AsyncStorage.getItem('colorPrimario'),
+        C_SECUNDARIO: await AsyncStorage.getItem('colorSecundario'),
+        C_TERCERARIO: await AsyncStorage.getItem('colorTercerario'),
+      }
+      console.log({retrievedColors: retrievedColors})
+      setColors(retrievedColors);
+    }
+
+    fetchColors();
+  }, []);
     const { text, onPress } = props;
     return (
         <View>
-            <Button title={<Text style={styles.textStyle}>{text}</Text>} style={styles.inputStyle}
-                onPress={onPress} buttonStyle={styles.btn}>
+            <Button title={<Text style={styles.textStyle}>{text}</Text>} style={{...styles.inputStyle, backgroundColor: colors.C_PRIMARIO}}
+                onPress={onPress} buttonStyle={{...styles.btn, backgroundColor: color ? color : colors.C_PRIMARIO}}>
             </Button>
         </View>
     )
@@ -16,12 +34,10 @@ export default function BtnPrimary(props) {
 
 const styles = StyleSheet.create({
     inputStyle: {
-        backgroundColor: colors.C_PRIMARIO,
         fontFamily: 'Arial',
     },
 
     btn: {
-        backgroundColor: colors.C_PRIMARIO,
         fontFamily: 'Roboto',
         borderRadius: 10,
         width: 200,
