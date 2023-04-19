@@ -71,109 +71,95 @@ export default function ContrasenaScreen(props) {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    
+
     const handleChangePassword = () => {
-        if (newPassword !== confirmPassword) {
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: "Las contraseñas no coinciden",
-          });
-        } else if (newPassword === "" || confirmPassword === "") { // Corregido este condicional
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: "No puedes dejar campos vacíos",
-          });
-        } else {
-          return new Promise(async (resolve, reject) => {
-            try {
-              const enfermera = await getData('idUsuario');
-              const url = path + 'api/usuarios/' + enfermera;
-              console.log("URL: " + url)
-              const token = await getData('token');
-              setToken(token);
-              console.log("Token: " + token);
-      
-              const response = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': 'Bearer ' + token
-                },
-                body: JSON.stringify({
-                  nombre: nombre,
-                  apellidos: apellidos,
-                  correo: correo,
-                  password: confirmPassword,
-                  rol: rol,
-                  idInstitucion: idInstitucion // Usar el valor obtenido de localStorage
-                }),
-              });
-              const json = await response.json();
-              resolve(json);
-              removeData("token");
-              removeData("nombre");
-              removeData("apellidos");
-              removeData("correo");
-              removeData("idUsuario");
-              removeData("idInstitucion");
-              removeData("rol");
-              removeData("colorPrimario");
-              removeData("colorSecundario");
-              removeData("colorTerciario");
-              Toast.show({
-                type: "success",
-                position: "bottom",
-                text1: "Contraseña cambiada correctamente, Inicia sesión de nuevo por favor",
-              });
-              navigation.navigate('LoginS');
-            } catch (error) {
-              console.log(error);
-              Toast.show({
-                type: "error",
-                position: "bottom",
-                text1: "Error al cambiar la contraseña",
-              });
-              reject(error);
-            }
-          });
-        }
-      }
-      
-
-    const selectedComponent = (key) => {
-        if (key === "pasword") {
-            //si el key es pasword se renderiza el formulario de cambio de contraseña
-            setModalVisible(true);
-        }
-    };
-    const [modalVisible, setModalVisible] = useState(false);//para el modal
-    const [modal2Visible, setModal2Visible] = useState(false);//para el modal
-
-    const optionsMenu = getOptionMenu(selectedComponent);
-
-    const validatePass = (oldPassword) => {
-        //AQUI VA LA FUNCION PARA VALIDAR LA CONTRASEÑA
-        if (oldPassword == "") {
+        console.log("Contraseña actual: " + password, "Contraseña ingresada: " + oldPassword)
+        if (newPassword === "" || confirmPassword === "" || oldPassword === "") { // Corregido este condicional
             Toast.show({
                 type: "error",
                 position: "bottom",
                 text1: "No puedes dejar campos vacíos",
             });
-        } else if (oldPassword == password) {
-
-            setModalVisible(false);
-            setModal2Visible(true);
         }
-        else {
+        else if (oldPassword !== password) {
             Toast.show({
                 type: "error",
                 position: "bottom",
                 text1: "Contraseña incorrecta",
             });
+        } else if (newPassword !== confirmPassword) {
+            Toast.show({
+                type: "error",
+                position: "bottom",
+                text1: "Las contraseñas no coinciden",
+            });
+        } else {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const enfermera = await getData('idUsuario');
+                    const url = path + 'api/usuarios/' + enfermera;
+                    console.log("URL: " + url)
+                    const token = await getData('token');
+                    setToken(token);
+                    console.log("Token: " + token);
+
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: JSON.stringify({
+                            nombre: nombre,
+                            apellidos: apellidos,
+                            correo: correo,
+                            password: confirmPassword,
+                            rol: rol,
+                            idInstitucion: idInstitucion // Usar el valor obtenido de localStorage
+                        }),
+                    });
+                    const json = await response.json();
+                    resolve(json);
+                    //limpiar el storage
+                    removeData("token");
+                    removeData("nombre");
+                    removeData("apellidos");
+                    removeData("correo");
+                    removeData("idUsuario");
+                    removeData("idInstitucion");
+                    removeData("rol");
+                    removeData("colorPrimario");
+                    removeData("colorSecundario");
+                    removeData("colorTerciario");
+                    Toast.show({
+                        type: "success",
+                        position: "bottom",
+                        text1: "Contraseña cambiada correctamente, Inicia sesión de nuevo por favor",
+                    });
+                    navigation.navigate('LoginS');
+                } catch (error) {
+                    console.log(error);
+                    Toast.show({
+                        type: "error",
+                        position: "bottom",
+                        text1: "Error al cambiar la contraseña",
+                    });
+                    reject(error);
+                }
+            });
         }
     }
+
+
+    const selectedComponent = (key) => {
+        if (key === "pasword") {
+            //si el key es pasword se renderiza el formulario de cambio de contraseña
+            setModal2Visible(true);
+        }
+    };
+    const [modal2Visible, setModal2Visible] = useState(false);//para el modal
+
+    const optionsMenu = getOptionMenu(selectedComponent);
 
     return (
         <KeyboardAwareScrollView>
@@ -222,34 +208,6 @@ export default function ContrasenaScreen(props) {
 
             </Button>
             <Modal
-                visible={modalVisible}
-                animationType="slide"
-                transparent={true}//Para que el modal sea transparente
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <KeyboardAwareScrollView>
-                    <View style={styles.Modal}>
-                        <Text style={styles.label}>Ingrese la contraseña actual:</Text>
-                        <TextInput
-                            secureTextEntry
-                            style={styles.inputModal}
-                            value={oldPassword}
-                            onChangeText={setOldPassword}
-                        />
-                        <View style={styles.buttonContainer}>
-                            <Button title="Cancelar" buttonStyle={styles.btnCancelar} onPress={() => {
-                                setModalVisible(false)
-                            }} />
-                            <Button title="Aceptar" buttonStyle={styles.btnAceptar} type={"submit"} onPress={() => {
-                                //validar contraseña
-                                validatePass(oldPassword);
-                                setModalVisible(false)
-                            }} />
-                        </View>
-                    </View>
-                </KeyboardAwareScrollView>
-            </Modal>
-            <Modal
                 visible={modal2Visible}
                 animationType="slide"
                 transparent={true}//Para que el modal sea transparente
@@ -257,6 +215,13 @@ export default function ContrasenaScreen(props) {
             >
                 <KeyboardAwareScrollView>
                     <View style={styles.Modal2}>
+                        <Text style={styles.label}>Ingrese la contraseña actual:</Text>
+                        <TextInput
+                            secureTextEntry
+                            style={styles.inputModal}
+                            value={oldPassword}
+                            onChangeText={setOldPassword}
+                        />
                         <Text style={styles.label}>Nueva contraseña:</Text>
                         <TextInput
                             secureTextEntry
@@ -273,10 +238,13 @@ export default function ContrasenaScreen(props) {
                             onChangeText={setConfirmPassword}
                         />
                         <View style={styles.buttonContainer}>
-                            <Button title="Aceptar" buttonStyle={styles.btnAceptar} onPress={() => {
+                            <Button title="Cancelar" buttonStyle={styles.btnCancelar} onPress={() => {
+                                setModal2Visible(false)
+                            }} />
+                            <Button title="Aceptar" buttonStyle={styles.btnAceptar} type={"submit"} onPress={() => {
                                 //validar contraseña
                                 handleChangePassword();
-                                setModalVisible(false)
+                                setModal2Visible(false)
                             }} />
                         </View>
                     </View>
@@ -425,12 +393,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: colors.C_SECUNDARIO,
         borderColor: '#F2F2F2',
-        height: 330,
+        height: 450,
         width: "80%",
         borderRadius: 10,
         alignSelf: 'center',
         alignContent: 'center',
-        marginTop: 250
+        marginTop: 160
     },
     logoutBtn: {
         backgroundColor: "grey",
